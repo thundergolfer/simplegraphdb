@@ -1,0 +1,15 @@
+{"triples": [
+	{"subject": "john c rielly", "prop": "follows", "object": "hannah arendt"},
+	{"subject": "marco polo", "prop": "follows", "object": "will smith"},
+	{"subject": "jonathon belotti", "prop": "follows", "object": "hannah arendt"},
+	{"subject": "will smith", "prop": "likes", "object": "irobot"},
+	{"subject": "malcolm turnbull", "prop": "likes", "object": "money"},
+	{"subject": "donald trump", "prop": "follows", "object": "will smith"},
+	{"subject": "john stewart", "prop": "follows", "object": "hannah arendt"},
+	{"subject": "jason statham", "prop": "follows", "object": "rosie huntington-whitely"},
+	{"subject": "jonathon belotti", "prop": "likes", "object": "golang"},
+	{"subject": "malcolm turnbull", "prop": "follows", "object": "jonathon belotti"},
+	{"subject": "malcolm turnbull", "prop": "follows", "object": "donald trump"},
+	{"subject": "donald trump", "prop": "likes", "object": "donald trump"}
+]}
+
