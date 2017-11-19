@@ -1,2 +1,5 @@
-# simple-graph-database
-Basic Golang implementation of a Triple Store. Built to learn the Golang language before an internship. 
+# Simple Graph Database - A Hexastore based Triple Store
+
+------
+
+Developed to help learn the Golang language.
