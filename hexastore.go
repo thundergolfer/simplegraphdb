@@ -164,6 +164,28 @@ func (store Hexastore) add(t *Triple) {
 	}
 }
 
+func (store Hexastore) remove(t *Triple) {
+	var s, p, o int = t.Subject, t.Prop, t.Object
+
+	var subject_indx = store.SPO
+
+	var pred = subject_indx[s]
+
+	if pred != nil {
+		var obj = pred[p]
+		if obj != nil {
+			if _, ok := obj[o]; ok {
+				delete(store.SPO[s][p], o)
+				delete(store.SOP[s][o], p)
+				delete(store.PSO[p][s], o)
+				delete(store.POS[p][o], s)
+				delete(store.OSP[o][s], p)
+				delete(store.OPS[o][p], s)
+			}
+		}
+	}
+}
+
 func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict) {
 	props = NewPropDict()
 	entities = NewEntityDict()

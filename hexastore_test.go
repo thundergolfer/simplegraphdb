@@ -76,3 +76,36 @@ func TestHexastoreAdd(t *testing.T) {
 		t.Error("Failed to add triple into PSO index", hexastore.PSO[2][1][3])
 	}
 }
+
+func TestHexastoreRemove(t *testing.T) {
+	var hexastore *Hexastore = newHexastore()
+	triple := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
+
+	hexastore.add(&triple)
+
+	if hexastore.SPO[1][2][3] != "hello world" {
+		t.Error("Minimal test of whether triple was correctly added failed!")
+	}
+
+	hexastore.remove(&triple)
+
+	_, ok := hexastore.SPO[1][2][3]
+	if ok != false {
+		t.Error("Failed to remove triple from SPO")
+	}
+	if _, ok := hexastore.SOP[1][3][2]; ok {
+		t.Error("Failed to remove triple from SOP")
+	}
+	if _, ok := hexastore.OPS[3][2][1]; ok {
+		t.Error("Failed to remove triple from OPS")
+	}
+	if _, ok := hexastore.OSP[3][1][2]; ok {
+		t.Error("Failed to remove triple from OSP")
+	}
+	if _, ok := hexastore.POS[2][3][1]; ok {
+		t.Error("Failed to remove triple from POS")
+	}
+	if _, ok := hexastore.PSO[2][1][3]; ok {
+		t.Error("Failed to remove triple from PSO")
+	}
+}
