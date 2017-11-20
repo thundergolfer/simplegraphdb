@@ -57,6 +57,19 @@ func (dict Dictionary) GetKey(val string) (key int, ok bool) {
 	return 0, false
 }
 
+func (dict Dictionary) Put(val string) (key int) {
+	// Don't call without checking that value doesn't already exist
+	dict.m[dict.NextKey] = val
+	key = dict.NextKey
+	dict.NextKey += 1
+	return
+}
+
+func (dict Dictionary) Get(key int) (val string, ok bool) {
+	val, ok = dict.m[key]
+	return
+}
+
 type EntityDict struct {
 	Dictionary
 }
@@ -80,12 +93,14 @@ func NewPropDict() PropDict {
 }
 
 type Hexastore struct {
-	SPO map[int]map[int]map[int]string
-	SOP map[int]map[int]map[int]string
-	PSO map[int]map[int]map[int]string
-	POS map[int]map[int]map[int]string
-	OSP map[int]map[int]map[int]string
-	OPS map[int]map[int]map[int]string
+	SPO      map[int]map[int]map[int]string
+	SOP      map[int]map[int]map[int]string
+	PSO      map[int]map[int]map[int]string
+	POS      map[int]map[int]map[int]string
+	OSP      map[int]map[int]map[int]string
+	OPS      map[int]map[int]map[int]string
+	entities *EntityDict
+	props    *PropDict
 }
 
 func newHexastore() *Hexastore {
@@ -114,6 +129,34 @@ func MakeTriple(subject, prop, object int, value string) *Triple {
 
 func PresentTriple(t *Triple, props PropDict, entities EntityDict) string {
 	return fmt.Sprintf("%s -> %s -> %s", entities.m[t.Subject], props.m[t.Prop], entities.m[t.Object])
+}
+
+func (store Hexastore) Add(subject, property, object, value string) bool {
+	subjectId, propId, objectId := store.MapStringsToIds(subject, property, object)
+	triple := MakeTriple(subjectId, propId, objectId, value)
+
+	store.add(triple)
+
+	return true
+}
+
+func (store Hexastore) MapIdsToStrings(subjId, propId, objectId int) (string, string, string) {
+	subject, _ := store.entities.Get(subjId)
+	object, _ := store.entities.Get(objectId)
+	prop, _ := store.props.Get(propId)
+
+	return subject, prop, object
+}
+
+func (store Hexastore) MapStringsToIds(subject, property, object string) (subjId, propId, objId int) {
+	var ok bool
+	subjId, ok = store.entities.GetKey(subject)
+	propId, ok = store.props.GetKey(property)
+	objId, ok = store.entities.GetKey(object)
+
+	_ = ok // TODO fix this weirdness
+
+	return
 }
 
 func (store Hexastore) add(t *Triple) {
@@ -186,6 +229,24 @@ func (store Hexastore) remove(t *Triple) {
 	}
 }
 
+func (store Hexastore) QuerySXX(subjId int) []Triple {
+	res := []Triple{}
+	relevant := store.SPO[subjId]
+
+	if relevant == nil {
+		return []Triple{}
+	}
+
+	for prop, objMap := range relevant {
+		for obj, value := range objMap {
+			currTriple := MakeTriple(subjId, prop, obj, value)
+			res = append(res, *currTriple)
+		}
+	}
+
+	return res
+}
+
 func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict) {
 	props = NewPropDict()
 	entities = NewEntityDict()
@@ -214,6 +275,9 @@ func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict
 		currTriple := MakeTriple(subjectId, propId, objectId, val)
 		store.add(currTriple)
 	}
+
+	store.props = &props
+	store.entities = &entities
 
 	return props, entities
 }
