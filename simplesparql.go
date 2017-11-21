@@ -82,8 +82,6 @@ type ConditionOperand struct {
 
 type ConditionRHS struct {
 	Compare *Compare `  @@`
-	Is      *Is      `| "IS" @@`
-	Between *Between `| "BETWEEN" @@`
 	In      *In      `| "IN" "(" @@ ")"`
 }
 
@@ -98,17 +96,6 @@ type CompareSelect struct {
 	Any    bool    ` | @"ANY"`
 	Some   bool    ` | @"SOME" )`
 	Select *Select `"(" @@ ")"`
-}
-
-type Is struct {
-	Not          bool     `[ @"NOT" ]`
-	Null         bool     `( @"NULL"`
-	DistinctFrom *Operand `  | "DISTINCT" "FROM" @@ )`
-}
-
-type Between struct {
-	Start *Operand `@@`
-	End   *Operand `"AND" @@`
 }
 
 type In struct {
