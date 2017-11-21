@@ -27,6 +27,33 @@ func TestNewHexastore(t *testing.T) {
 	}
 }
 
+func TestPresentableResults(t *testing.T) {
+	var hexastore *Hexastore = newHexastore()
+	var testTriple = Triple{Subject: 0, Prop: 0, Object: 1}
+	var testTripleTwo = Triple{Subject: 0, Prop: 0, Object: 2}
+
+	hexastore.props.Put("property")
+	hexastore.entities.Put("A")
+	hexastore.entities.Put("B")
+	hexastore.entities.Put("C")
+
+	var testResults = []Triple{testTriple, testTripleTwo}
+
+	got := *(PresentableResults(&testResults, hexastore))
+
+	if len(got) != 2 {
+		t.Error("Expected to put in 2 results and get 2 presentables back. got ", len(got))
+	}
+
+	if got[0] != "A -> property -> B" {
+		t.Error("Incorrect presentation string returned")
+	}
+
+	if got[1] != "A -> property -> C" {
+		t.Error("Incorrect presentation string returned")
+	}
+}
+
 func TestGetKey(t *testing.T) {
 	var dict Dictionary
 
