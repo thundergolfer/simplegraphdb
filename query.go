@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	fmt.Println("hello")
-	simplesparql.Parse()
+	fmt.Println("Parsing query: ")
+	simplesparql.Parse("SELECT ?x WHERE { ?x 'likes' 'eminem' }")
 }
