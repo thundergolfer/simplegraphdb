@@ -85,7 +85,6 @@ type ConditionRHS struct {
 	Is      *Is      `| "IS" @@`
 	Between *Between `| "BETWEEN" @@`
 	In      *In      `| "IN" "(" @@ ")"`
-	Like    *Like    `| "LIKE" @@`
 }
 
 type Compare struct {
@@ -99,11 +98,6 @@ type CompareSelect struct {
 	Any    bool    ` | @"ANY"`
 	Some   bool    ` | @"SOME" )`
 	Select *Select `"(" @@ ")"`
-}
-
-type Like struct {
-	Not     bool     `[ @"NOT" ]`
-	Operand *Operand `@@`
 }
 
 type Is struct {
