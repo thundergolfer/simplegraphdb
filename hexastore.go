@@ -229,12 +229,12 @@ func (store Hexastore) remove(t *Triple) {
 	}
 }
 
-func (store Hexastore) QuerySXX(subjId int) []Triple {
+func (store Hexastore) QuerySXX(subjId int) *[]Triple {
 	res := []Triple{}
 	relevant := store.SPO[subjId]
 
 	if relevant == nil {
-		return []Triple{}
+		return &[]Triple{}
 	}
 
 	for prop, objMap := range relevant {
@@ -244,15 +244,23 @@ func (store Hexastore) QuerySXX(subjId int) []Triple {
 		}
 	}
 
-	return res
+	return &res
 }
 
-func (store Hexastore) QueryXPX(propId int) []Triple {
+func (store Hexastore) QuerySPX(subjId, propId int) *[]Triple {
+	return &[]Triple{}
+}
+
+func (store Hexastore) QuerySXO(subjId, objId int) *[]Triple {
+	return &[]Triple{}
+}
+
+func (store Hexastore) QueryXPX(propId int) *[]Triple {
 	res := []Triple{}
 	relevant := store.PSO[propId]
 
 	if relevant == nil {
-		return []Triple{}
+		return &[]Triple{}
 	}
 
 	for subjId, objMap := range relevant {
@@ -262,15 +270,19 @@ func (store Hexastore) QueryXPX(propId int) []Triple {
 		}
 	}
 
-	return res
+	return &res
 }
 
-func (store Hexastore) QueryXXO(objId int) []Triple {
+func (store Hexastore) QueryXPO(propId, objId int) *[]Triple {
+	return &[]Triple{}
+}
+
+func (store Hexastore) QueryXXO(objId int) *[]Triple {
 	res := []Triple{}
 	relevant := store.OPS[objId]
 
 	if relevant == nil {
-		return []Triple{}
+		return &[]Triple{}
 	}
 
 	for propId, subjMap := range relevant {
@@ -280,7 +292,15 @@ func (store Hexastore) QueryXXO(objId int) []Triple {
 		}
 	}
 
-	return res
+	return &res
+}
+
+func (store Hexastore) QuerySPO(subjId, propId, objId int) *[]Triple {
+	return &[]Triple{}
+}
+
+func (store Hexastore) QueryXXX() *[]Triple {
+	return &[]Triple{}
 }
 
 func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict) {
@@ -318,7 +338,7 @@ func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict
 	return props, entities
 }
 
-func main() {
+func main_() {
 	var db Db
 	entities := NewEntityDict()
 
