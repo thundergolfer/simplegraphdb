@@ -30,8 +30,6 @@ func toJson(db interface{}) string {
 	return string(bytes)
 }
 
-var dbFilePath = "./db.json"
-
 type Db struct {
 	Triples []Entry
 }
@@ -78,18 +76,18 @@ type PropDict struct {
 	Dictionary
 }
 
-func NewEntityDict() EntityDict {
-	var pD EntityDict
-	pD.m = make(map[int]string)
-	pD.NextKey = 0
-	return pD
+func NewEntityDict() *EntityDict {
+	var eD EntityDict
+	eD.m = make(map[int]string)
+	eD.NextKey = 0
+	return &eD
 }
 
-func NewPropDict() PropDict {
+func NewPropDict() *PropDict {
 	var pD PropDict
 	pD.m = make(map[int]string)
 	pD.NextKey = 0
-	return pD
+	return &pD
 }
 
 type Hexastore struct {
@@ -111,6 +109,8 @@ func newHexastore() *Hexastore {
 	store.POS = make(map[int]map[int]map[int]string)
 	store.OSP = make(map[int]map[int]map[int]string)
 	store.OPS = make(map[int]map[int]map[int]string)
+	store.entities = NewEntityDict()
+	store.props = NewPropDict()
 
 	return &store
 }
@@ -127,7 +127,16 @@ func MakeTriple(subject, prop, object int, value string) *Triple {
 	return &t
 }
 
-func PresentTriple(t *Triple, props PropDict, entities EntityDict) string {
+func PresentableResults(results *[]Triple, hexastore *Hexastore) *[]string {
+	presentables := []string{}
+	for _, triple := range *results {
+		presentables = append(presentables, PresentTriple(&triple, hexastore.props, hexastore.entities))
+	}
+
+	return &presentables
+}
+
+func PresentTriple(t *Triple, props *PropDict, entities *EntityDict) string {
 	return fmt.Sprintf("%s -> %s -> %s", entities.m[t.Subject], props.m[t.Prop], entities.m[t.Object])
 }
 
@@ -151,8 +160,17 @@ func (store Hexastore) MapIdsToStrings(subjId, propId, objectId int) (string, st
 func (store Hexastore) MapStringsToIds(subject, property, object string) (subjId, propId, objId int) {
 	var ok bool
 	subjId, ok = store.entities.GetKey(subject)
+	if !ok {
+		subjId = store.entities.Put(subject)
+	}
 	propId, ok = store.props.GetKey(property)
+	if !ok {
+		propId = store.props.Put(property)
+	}
 	objId, ok = store.entities.GetKey(object)
+	if !ok {
+		objId = store.entities.Put(object)
+	}
 
 	_ = ok // TODO fix this weirdness
 
@@ -274,7 +292,25 @@ func (store Hexastore) QueryXPX(propId int) *[]Triple {
 }
 
 func (store Hexastore) QueryXPO(propId, objId int) *[]Triple {
-	return &[]Triple{}
+	res := []Triple{}
+	relevant := store.POS[propId]
+
+	if relevant == nil {
+		return &[]Triple{}
+	}
+
+	subjects := relevant[objId]
+
+	if subjects == nil {
+		return &[]Triple{}
+	}
+
+	for subjId, value := range subjects {
+		currTriple := MakeTriple(subjId, propId, objId, value)
+		res = append(res, *currTriple)
+	}
+
+	return &res
 }
 
 func (store Hexastore) QueryXXO(objId int) *[]Triple {
@@ -303,44 +339,19 @@ func (store Hexastore) QueryXXX() *[]Triple {
 	return &[]Triple{}
 }
 
-func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict) {
-	props = NewPropDict()
-	entities = NewEntityDict()
-
+func loadHexastore(db Db, store *Hexastore) error {
 	for _, entry := range db.Triples {
-		subjectId, ok := entities.GetKey(entry.Subject)
-		if !ok {
-			subjectId = entities.NextKey
-			entities.m[entities.NextKey] = entry.Subject
-			entities.NextKey += 1
-		}
-		objectId, ok := entities.GetKey(entry.Object)
-		if !ok {
-			objectId = entities.NextKey
-			entities.m[entities.NextKey] = entry.Object
-			entities.NextKey += 1
-		}
-		propId, ok := props.GetKey(entry.Prop)
-		if !ok {
-			propId = props.NextKey
-			props.m[props.NextKey] = entry.Prop
-			props.NextKey += 1
-		}
 		val := "xxxx" // TODO
 
-		currTriple := MakeTriple(subjectId, propId, objectId, val)
-		store.add(currTriple)
+		store.Add(entry.Subject, entry.Prop, entry.Object, val)
 	}
 
-	store.props = &props
-	store.entities = &entities
-
-	return props, entities
+	return nil
 }
 
-func main_() {
+func InitTestHexastore() *Hexastore {
 	var db Db
-	entities := NewEntityDict()
+	var dbFilePath = "./db.json"
 
 	dat, err := ioutil.ReadFile(dbFilePath)
 	check(err)
@@ -351,16 +362,7 @@ func main_() {
 	fmt.Print(db.toString())
 
 	store := newHexastore()
-	props, entities := loadHexastore(db, store)
+	_ = loadHexastore(db, store)
 
-	fmt.Println("Yea yeah yeah yeah yeah")
-	fmt.Println(store.SPO[0][0][1])
-	fmt.Println(props.m[1])
-	fmt.Println(entities.m[1])
-
-	for k, val := range entities.m {
-		fmt.Println(k)
-		fmt.Println(string(val))
-	}
-
+	return store
 }

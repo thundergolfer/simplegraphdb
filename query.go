@@ -6,20 +6,27 @@ import (
 	"log"
 	"strings"
 
-	// "github.com/alecthomas/repr"
+	"github.com/alecthomas/repr"
 	"github.com/thundergolfer/simple-graph-database/simplesparql"
 )
 
 func main() {
+	var results *[]Triple
+	query := "SELECT ?x WHERE { ?x 'likes' 'money' }"
 	fmt.Println("Parsing query: ")
-	queryModel := simplesparql.Parse("SELECT ?x WHERE { ?x 'likes' 'eminem' }")
+	queryModel := simplesparql.Parse(query)
 	returnVars := extractReturnVariables(queryModel)
 	first, second, third := extractTripleExpressionElements(queryModel)
 	fmt.Println(first)
 	fmt.Println(second)
 	fmt.Println(third)
 
+	fmt.Println("Trying to do runQuery()")
+	store := InitTestHexastore()
+	results = runQuery(query, store)
+	fmt.Println("Length of results is: ", len(*results))
 	_ = returnVars // TODO
+	repr.Println(PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
 }
 
 func runQuery(query string, hexastore *Hexastore) *[]Triple {
@@ -148,7 +155,7 @@ func validateVariablesBalance(selectExprVars, whereExprVars []string) bool {
 	}
 
 	for _, elem := range selectExprVars {
-		if _, ok := checker[elem]; ok {
+		if _, ok := checker[elem]; !ok {
 			return false
 		}
 	}
