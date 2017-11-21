@@ -33,22 +33,14 @@ type Select struct {
 	Distinct   bool              `[  @"DISTINCT"`
 	All        bool              ` | @"ALL" ]`
 	Expression *SelectExpression `@@`
-	From       *From             `"FROM" @@`
+	From       *From             `@@`
 	Limit      *Expression       `[ "LIMIT" @@ ]`
 	Offset     *Expression       `[ "OFFSET" @@ ]`
 	GroupBy    *Expression       `[ "GROUP" "BY" @@ ]`
 }
 
 type From struct {
-	TableExpressions []*TableExpression `@@ { "," @@ }`
-	Where            *Expression        `[ "WHERE" @@ ]`
-}
-
-type TableExpression struct {
-	Table  string        `( @Ident { "." @Ident }`
-	Select *Select       `  | "(" @@ ")"`
-	Values []*Expression `  | "VALUES" "(" @@ { "," @@ } ")")`
-	As     string        `[ "AS" @Ident ]`
+	Where *TripleExpression `"WHERE" "{" @@ "}"`
 }
 
 type SelectExpression struct {
