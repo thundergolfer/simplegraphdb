@@ -13,19 +13,11 @@ import (
 func main() {
 	var results *[]Triple
 	query := "SELECT ?x WHERE { ?x 'likes' 'money' }"
-	fmt.Println("Parsing query: ")
-	queryModel := simplesparql.Parse(query)
-	returnVars := extractReturnVariables(queryModel)
-	first, second, third := extractTripleExpressionElements(queryModel)
-	fmt.Println(first)
-	fmt.Println(second)
-	fmt.Println(third)
 
 	fmt.Println("Trying to do runQuery()")
 	store := InitTestHexastore()
 	results = runQuery(query, store)
 	fmt.Println("Length of results is: ", len(*results))
-	_ = returnVars // TODO
 	repr.Println(PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
 }
 
