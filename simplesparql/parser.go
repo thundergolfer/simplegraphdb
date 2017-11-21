@@ -145,7 +145,7 @@ type Array struct {
 	Expressions []*Expression `"(" @@ { "," @@ } ")"`
 }
 
-func Parse(query string) {
+func Parse(query string) *Select {
 	sql := &Select{}
 	err := sqlParser.ParseString(query, sql)
 	if err != nil {
@@ -153,4 +153,6 @@ func Parse(query string) {
 	}
 
 	repr.Println(sql, repr.Indent("  "), repr.OmitEmpty(true))
+
+	return sql
 }
