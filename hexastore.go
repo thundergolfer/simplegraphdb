@@ -55,7 +55,7 @@ func (dict Dictionary) GetKey(val string) (key int, ok bool) {
 	return 0, false
 }
 
-func (dict Dictionary) Put(val string) (key int) {
+func (dict *Dictionary) Put(val string) (key int) {
 	// Don't call without checking that value doesn't already exist
 	dict.m[dict.NextKey] = val
 	key = dict.NextKey
@@ -355,11 +355,8 @@ func InitTestHexastore() *Hexastore {
 
 	dat, err := ioutil.ReadFile(dbFilePath)
 	check(err)
-	fmt.Print(string(dat))
 
 	json.Unmarshal(dat, &db)
-
-	fmt.Print(db.toString())
 
 	store := newHexastore()
 	_ = loadHexastore(db, store)
