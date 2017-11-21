@@ -265,6 +265,24 @@ func (store Hexastore) QueryXPX(propId int) []Triple {
 	return res
 }
 
+func (store Hexastore) QueryXXO(objId int) []Triple {
+	res := []Triple{}
+	relevant := store.OPS[objId]
+
+	if relevant == nil {
+		return []Triple{}
+	}
+
+	for propId, subjMap := range relevant {
+		for subjId, value := range subjMap {
+			currTriple := MakeTriple(subjId, propId, objId, value)
+			res = append(res, *currTriple)
+		}
+	}
+
+	return res
+}
+
 func loadHexastore(db Db, store *Hexastore) (props PropDict, entities EntityDict) {
 	props = NewPropDict()
 	entities = NewEntityDict()
