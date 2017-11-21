@@ -57,7 +57,7 @@ vet:
 
 fmt:
 				cd ${BUILD_DIR}; \
-				go fmt $${go list ./,,, | grep -v /vendor/) ; \
+				go fmt $${go list ./... | grep -v /vendor/) ; \
 				cd - >/dev/null
 
 clean:
