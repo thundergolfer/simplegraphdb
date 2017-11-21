@@ -124,7 +124,32 @@ func TestQuerySXX(t *testing.T) {
 
 	results := hexastore.QuerySXX(1)
 
-	if len(results) != 3 {
-		t.Error("Subject-oriented query returned incorrect number of records. Expected 3, got ", len(results))
+	if len(*results) != 3 {
+		t.Error("Subject-oriented query returned incorrect number of records. Expected 3, got ", len(*results))
+	}
+}
+
+func TestQueryXPO(t *testing.T) {
+	var hexastore *Hexastore = newHexastore()
+	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
+	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
+	triple3 := Triple{Subject: 4, Prop: 3, Object: 3, Value: "hello world"}
+	triple4 := Triple{Subject: 4, Prop: 4, Object: 3, Value: "hello world"}
+
+	hexastore.add(&triple1)
+	hexastore.add(&triple2)
+	hexastore.add(&triple3)
+	hexastore.add(&triple4)
+
+	results := hexastore.QueryXPO(2, 3)
+
+	if len(*results) != 2 {
+		t.Error("Subject-oriented query returned incorrect number of records. Expected 3, got ", len(*results))
+	}
+
+	for _, triple := range *results {
+		if !(triple.Subject == 1 || triple.Subject == 2) {
+			t.Error("Query returned incorrect triple. Expected Subject ID to be 1, got ", triple.Subject)
+		}
 	}
 }
