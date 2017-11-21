@@ -13,5 +13,6 @@
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
 
-# Ignore the binary
+# Ignore the binaries
 simple-graph-database
+simplesparql
