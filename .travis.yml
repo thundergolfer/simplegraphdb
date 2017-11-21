@@ -5,4 +5,7 @@ go:
 
 install: go get -t ./...
 
+notifications:
+  email: false
+
 script: make test
