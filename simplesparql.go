@@ -34,14 +34,14 @@ type Select struct {
 	Distinct   bool              `[  @"DISTINCT"`
 	All        bool              ` | @"ALL" ]`
 	Expression *SelectExpression `@@`
-	From       *From             `@@`
+	Where      *Where            `@@`
 	Limit      *Expression       `[ "LIMIT" @@ ]`
 	Offset     *Expression       `[ "OFFSET" @@ ]`
 	GroupBy    *Expression       `[ "GROUP" "BY" @@ ]`
 }
 
-type From struct {
-	Where *TripleExpression `"WHERE" "{" @@ "}"`
+type Where struct {
+	Expression *TripleExpression `"WHERE" "{" @@ "}"`
 }
 
 type SelectExpression struct {
