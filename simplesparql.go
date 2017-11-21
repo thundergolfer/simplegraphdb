@@ -12,7 +12,8 @@ var (
 
 	sqlLexer = lexer.Unquote(lexer.Upper(lexer.Must(lexer.Regexp(`(\s+)`+
 		`|(?P<Keyword>(?i)SELECT|FROM|TOP|DISTINCT|ALL|WHERE|GROUP|BY|HAVING|UNION|MINUS|EXCEPT|INTERSECT|ORDER|LIMIT|OFFSET|TRUE|FALSE|NULL|IS|NOT|ANY|SOME|BETWEEN|AND|OR|LIKE|AS|IN)`+
-		`|(?P<Ident>[a-zA-Z_?][a-zA-Z0-9_]*)`+
+		`|(?P<Ident>[a-zA-Z_][a-zA-Z0-9_]*)`+
+		`|(?P<Variable>\?[a-zA-Z_][a-zA-Z0-9_]*)`+
 		`|(?P<Number>[-+]?\d*\.?\d+([eE][-+]?\d+)?)`+
 		`|(?P<String>'[^']*'|"[^"]*")`+
 		`|(?P<Operators><>|!=|<=|>=|[-+*/%,.(){}=<>])`,
@@ -107,14 +108,20 @@ type Summand struct {
 }
 
 type Factor struct {
-	LHS *Term  `@@`
-	Op  string `[ @("*" | "/" | "%")`
-	RHS *Term  `  @@ ]`
+	LHS *TripleTerm `@@`
+	Op  string      `[ @("*" | "/" | "%")`
+	RHS *TripleTerm `  @@ ]`
 }
 
 type Term struct {
-	Select        *Select     ` "?"@@`
+	Select        *Select     ` @@`
 	SymbolRef     *SymbolRef  `| @@`
+	Value         *Value      `| @@`
+	SubExpression *Expression `| "(" @@ ")"`
+}
+
+type TripleTerm struct {
+	Var           string      `| @Variable`
 	Value         *Value      `| @@`
 	SubExpression *Expression `| "(" @@ ")"`
 }
