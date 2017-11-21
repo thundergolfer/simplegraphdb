@@ -44,13 +44,14 @@ type From struct {
 }
 
 type SelectExpression struct {
-	All         bool                 `  @"*"`
-	Expressions []*AliasedExpression `| @@ { "," @@ }`
+	All         bool          `  @"*"`
+	Expressions []*Expression `| @@ { "," @@ }`
 }
 
-type AliasedExpression struct {
-	Expression *Expression `@@`
-	As         string      `[ "AS" @Ident ]`
+type TripleExpression struct {
+	First  *TripleTerm ` @@`
+	Second *TripleTerm ` @@`
+	Third  *TripleTerm ` @@`
 }
 
 type Expression struct {
