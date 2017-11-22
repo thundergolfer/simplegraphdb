@@ -16,3 +16,6 @@
 # Ignore the binaries
 simple-graph-database
 query
+
+# Credentials files
+scripts/private_twitter_credentials.json
