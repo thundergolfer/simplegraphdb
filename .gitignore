@@ -19,3 +19,6 @@ query
 
 # Credentials files
 scripts/private_twitter_credentials.json
+
+# Python scripts
+scripts/scrapingenv
