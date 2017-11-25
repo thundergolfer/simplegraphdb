@@ -5,7 +5,6 @@ import (
 
 	"github.com/alecthomas/participle"
 	"github.com/alecthomas/participle/lexer"
-	"github.com/alecthomas/repr"
 )
 
 var (
@@ -151,8 +150,6 @@ func Parse(query string) *Select {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	repr.Println(sql, repr.Indent("  "), repr.OmitEmpty(true))
 
 	return sql
 }
