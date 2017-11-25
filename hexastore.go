@@ -266,7 +266,21 @@ func (store Hexastore) QuerySXX(subjId int) *[]Triple {
 }
 
 func (store Hexastore) QuerySPX(subjId, propId int) *[]Triple {
-	return &[]Triple{}
+	res := []Triple{}
+	relevant := store.SPO[subjId]
+
+	if relevant == nil {
+		return &[]Triple{}
+	}
+
+	properties := relevant[propId]
+
+	for objId, value := range properties {
+		currTriple := MakeTriple(subjId, propId, objId, value)
+		res = append(res, *currTriple)
+	}
+
+	return &res
 }
 
 func (store Hexastore) QuerySXO(subjId, objId int) *[]Triple {

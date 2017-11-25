@@ -156,6 +156,25 @@ func TestQuerySXX(t *testing.T) {
 	}
 }
 
+func TestQuerySPX(t *testing.T) {
+	var hexastore *Hexastore = newHexastore()
+	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
+	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
+	triple3 := Triple{Subject: 1, Prop: 3, Object: 3, Value: "hello world"}
+	triple4 := Triple{Subject: 1, Prop: 4, Object: 3, Value: "hello world"}
+
+	hexastore.add(&triple1)
+	hexastore.add(&triple2)
+	hexastore.add(&triple3)
+	hexastore.add(&triple4)
+
+	results := hexastore.QuerySPX(1, 3)
+
+	if len(*results) != 1 {
+		t.Error("Subject+Property oriented query returned incorrect num of records. Expected 1, got ", len(*results))
+	}
+}
+
 func TestQueryXPO(t *testing.T) {
 	var hexastore *Hexastore = newHexastore()
 	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
