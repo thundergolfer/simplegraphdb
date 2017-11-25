@@ -1,4 +1,4 @@
-package main
+package simplegraphdb
 
 import (
 	"encoding/json"
@@ -381,8 +381,11 @@ func loadHexastore(db Db, store *Hexastore) error {
 }
 
 func InitTestHexastore() *Hexastore {
+	return InitHexastoreFromJson("./db.json")
+}
+
+func InitHexastoreFromJson(dbFilePath string) *Hexastore {
 	var db Db
-	var dbFilePath = "./db.json"
 
 	dat, err := ioutil.ReadFile(dbFilePath)
 	check(err)

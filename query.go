@@ -1,4 +1,4 @@
-package main
+package simplegraphdb
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/alecthomas/repr"
-	"github.com/thundergolfer/simple-graph-database/simplesparql"
+	"github.com/thundergolfer/simplegraphdb/simplesparql"
 )
 
 func main() {
@@ -16,12 +16,12 @@ func main() {
 
 	fmt.Println("Trying to do runQuery()")
 	store := InitTestHexastore()
-	results = runQuery(query, store)
+	results = RunQuery(query, store)
 	fmt.Println("Length of results is: ", len(*results))
 	repr.Println(PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
 }
 
-func runQuery(query string, hexastore *Hexastore) *[]Triple {
+func RunQuery(query string, hexastore *Hexastore) *[]Triple {
 	queryModel := simplesparql.Parse(query)
 
 	_, err := validateQuery(queryModel, hexastore)
