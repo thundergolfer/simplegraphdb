@@ -3,11 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	// "io"
 	"io/ioutil"
-	// "log"
 	"os"
-	// "strings"
 )
 
 func check(e error) {
@@ -346,11 +343,31 @@ func (store Hexastore) QueryXXO(objId int) *[]Triple {
 }
 
 func (store Hexastore) QuerySPO(subjId, propId, objId int) *[]Triple {
+	if value, ok := store.SPO[subjId][propId][objId]; ok {
+		triple := MakeTriple(subjId, propId, objId, value)
+		return &[]Triple{*triple}
+	}
+
 	return &[]Triple{}
 }
 
 func (store Hexastore) QueryXXX() *[]Triple {
-	return &[]Triple{}
+	res := []Triple{}
+
+	for subjId, propMap := range store.SPO {
+		for propId, objMap := range propMap {
+			for objId, value := range objMap {
+				currTriple := MakeTriple(subjId, propId, objId, value)
+				res = append(res, *currTriple)
+			}
+		}
+	}
+
+	return &res
+}
+
+func (store Hexastore) dump() *[]Triple {
+	return store.QueryXXX()
 }
 
 func loadHexastore(db Db, store *Hexastore) error {

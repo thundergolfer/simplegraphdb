@@ -199,3 +199,38 @@ func TestQueryXPO(t *testing.T) {
 		}
 	}
 }
+
+func TestQueryXXX(t *testing.T) {
+	var hexastore *Hexastore = newHexastore()
+	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
+	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
+	triple3 := Triple{Subject: 4, Prop: 3, Object: 3, Value: "hello world"}
+	triple4 := Triple{Subject: 4, Prop: 4, Object: 3, Value: "hello world"}
+
+	hexastore.add(&triple1)
+	hexastore.add(&triple2)
+	hexastore.add(&triple3)
+	hexastore.add(&triple4)
+
+	results := hexastore.QueryXXX()
+
+	if len(*results) != 4 {
+		t.Error("*-type query did not return all records in hexastore")
+	}
+}
+
+func TestQuerySPO(t *testing.T) {
+	var hexastore *Hexastore = newHexastore()
+	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello mars"}
+	hexastore.add(&triple1)
+
+	result := hexastore.QuerySPO(1, 2, 3)
+	if len(*result) != 1 {
+		t.Error("Full subject-property-object query did not return expected value. Wanted 'hello mars', got ", *result)
+	}
+
+	first := (*result)[0]
+	if first.Value != "hello mars" {
+		t.Error("Something went wrong")
+	}
+}
