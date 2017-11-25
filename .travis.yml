@@ -3,6 +3,10 @@ language: go
 go:
   - 1.6
 
+before_install:
+  - cp .netrc ~
+  - chmod 600 .netrc
+
 install: go get -t ./...
 
 notifications:
