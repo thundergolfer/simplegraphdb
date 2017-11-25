@@ -1,5 +1,5 @@
-# note: call scripts from /scripts
-BINARY = simple-graph-database
+ note: call scripts from /scripts
+BINARY = simplegraphdb
 VET_REPORT = vet.report
 TEST_PORT = tests.xml
 GOARCH = amd64
