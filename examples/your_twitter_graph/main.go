@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	store := simplegraphdb.InitHexastoreFromJson("../script/your_twitter_examples_db.json")
+	store := simplegraphdb.InitHexastoreFromJson("../../scripts/your_twitter_example_db.json")
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter simpleSPARQL style query: ")
