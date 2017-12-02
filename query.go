@@ -2,26 +2,13 @@ package simplegraphdb
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 
-	"github.com/alecthomas/repr"
 	"github.com/thundergolfer/simplegraphdb/simplesparql"
 )
 
-func main() {
-	var results *[]Triple
-	query := "SELECT ?x WHERE { ?x 'likes' 'money' }"
-
-	fmt.Println("Trying to do runQuery()")
-	store := InitTestHexastore()
-	results = RunQuery(query, store)
-	fmt.Println("Length of results is: ", len(*results))
-	repr.Println(PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
-}
-
-func RunQuery(query string, hexastore *Hexastore) *[]Triple {
+func RunQuery(query string, hexastore *Hexastore) *[][]string {
 	queryModel := simplesparql.Parse(query)
 
 	_, err := validateQuery(queryModel, hexastore)
@@ -29,7 +16,25 @@ func RunQuery(query string, hexastore *Hexastore) *[]Triple {
 		log.Fatal(err)
 	}
 
-	extractReturnVariables(queryModel)
+	returnVars := extractReturnVariables(queryModel)
+	rawResults := retreiveQueryResults(queryModel, hexastore)
+	numResults := len(*rawResults)
+	mappedResults := mapTriplePartsToVars(hexastore, queryModel, rawResults)
+
+	stringResults := make([][]string, len(*rawResults)+1)
+	stringResults[0] = returnVars // add header
+
+	for i := 0; i < numResults; i++ {
+		stringResults[i+1] = make([]string, len(returnVars))
+		for j, rVar := range returnVars {
+			stringResults[i+1][j] = mappedResults[rVar][i]
+		}
+	}
+
+	return &stringResults
+}
+
+func retreiveQueryResults(queryModel *simplesparql.Select, hexastore *Hexastore) *[]Triple {
 	first, second, third := extractTripleExpressionElements(queryModel)
 
 	if isSparqlVariable(first) { // X??
@@ -64,6 +69,45 @@ func RunQuery(query string, hexastore *Hexastore) *[]Triple {
 	propId, _ := hexastore.props.GetKey(second)
 	objId, _ := hexastore.entities.GetKey(third)
 	return hexastore.QuerySPO(subjId, propId, objId)
+}
+
+func mapTriplePartsToVars(store *Hexastore, queryModel *simplesparql.Select, results *[]Triple) (mappedParts map[string][]string) {
+	var firstVarName, scndVarName, thirdVarName string
+	numResults := len(*results)
+	mappedParts = make(map[string][]string)
+	first, second, third := extractTripleExpressionElements(queryModel)
+
+	if isSparqlVariable(first) {
+		firstVarName = first
+		mappedParts[firstVarName] = make([]string, numResults)
+
+	}
+	if isSparqlVariable(second) {
+		scndVarName = second
+		mappedParts[scndVarName] = make([]string, numResults)
+	}
+	if isSparqlVariable(third) {
+		thirdVarName = third
+		mappedParts[thirdVarName] = make([]string, numResults)
+	}
+
+	for i, triple := range *results {
+		if firstVarName != "" {
+			mappedParts[firstVarName][i] = store.ResolveEntity(triple.Subject)
+		}
+		if scndVarName != "" {
+			mappedParts[scndVarName][i] = store.ResolveProp(triple.Prop)
+		}
+		if thirdVarName != "" {
+			mappedParts[thirdVarName][i] = store.ResolveEntity(triple.Object)
+		}
+	}
+
+	return
+}
+
+func processQueryResults(queryModel *simplesparql.Select, results *[]Triple) []string {
+	return []string{}
 }
 
 func validateQuery(queryModel *(simplesparql.Select), hexastore *Hexastore) (bool, error) {

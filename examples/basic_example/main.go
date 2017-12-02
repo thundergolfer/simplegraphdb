@@ -9,11 +9,12 @@ import (
 
 func main() {
 	fmt.Println("vim-go")
-	var results *[]simplegraphdb.Triple
+	var results *[][]string
 	query := "SELECT ?x WHERE { ?x 'likes' 'money' }"
 
 	fmt.Println("Trying to do runQuery()")
 	store := simplegraphdb.InitTestHexastore()
 	results = simplegraphdb.RunQuery(query, store)
-	repr.Println(simplegraphdb.PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
+	repr.Println(results, repr.Indent("  "), repr.OmitEmpty(true))
+	// repr.Println(simplegraphdb.PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
 }

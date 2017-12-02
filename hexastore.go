@@ -137,6 +137,16 @@ func PresentTriple(t *Triple, props *PropDict, entities *EntityDict) string {
 	return fmt.Sprintf("%s -> %s -> %s", entities.m[t.Subject], props.m[t.Prop], entities.m[t.Object])
 }
 
+func (store Hexastore) ResolveEntity(id int) string {
+	val, _ := store.entities.Get(id)
+	return val
+}
+
+func (store Hexastore) ResolveProp(id int) string {
+	val, _ := store.props.Get(id)
+	return val
+}
+
 func (store Hexastore) Add(subject, property, object, value string) bool {
 	subjectId, propId, objectId := store.MapStringsToIds(subject, property, object)
 	triple := MakeTriple(subjectId, propId, objectId, value)
