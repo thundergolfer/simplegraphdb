@@ -8,7 +8,7 @@ import (
 	"github.com/thundergolfer/simplegraphdb/simplesparql"
 )
 
-func RunQuery(query string, hexastore *Hexastore) *[][]string {
+func RunQuery(query string, hexastore *Hexastore) string {
 	queryModel := simplesparql.Parse(query)
 
 	_, err := validateQuery(queryModel, hexastore)
@@ -18,10 +18,28 @@ func RunQuery(query string, hexastore *Hexastore) *[][]string {
 
 	returnVars := extractReturnVariables(queryModel)
 	rawResults := retreiveQueryResults(queryModel, hexastore)
-	numResults := len(*rawResults)
 	mappedResults := mapTriplePartsToVars(hexastore, queryModel, rawResults)
+	resultsGrid := buildResultsGrid(returnVars, mappedResults, len(*rawResults))
 
-	stringResults := make([][]string, len(*rawResults)+1)
+	return presentResultGrid(resultsGrid)
+}
+
+func presentResultGrid(resultsGrid *[][]string) (presentable string) {
+	presentable = ""
+	for i, row := range *resultsGrid {
+		for _, col := range row {
+			presentable += (col + " | ")
+		}
+		presentable += "\n"
+		if i == 0 {
+			presentable += "------------------------------------------------\n"
+		}
+	}
+	return
+}
+
+func buildResultsGrid(returnVars []string, mappedResults map[string][]string, numResults int) *[][]string {
+	stringResults := make([][]string, numResults+1)
 	stringResults[0] = returnVars // add header
 
 	for i := 0; i < numResults; i++ {
