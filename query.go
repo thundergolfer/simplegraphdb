@@ -42,33 +42,33 @@ func retreiveQueryResults(queryModel *simplesparql.Select, hexastore *Hexastore)
 			if isSparqlVariable(third) { // XXX
 				return hexastore.QueryXXX()
 			}
-			objId, _ := hexastore.entities.GetKey(third)
-			return hexastore.QueryXXO(objId) // XXO
+			objID, _ := hexastore.entities.GetKey(third)
+			return hexastore.QueryXXO(objID) // XXO
 		} else if isSparqlVariable(third) { // XPX
-			propId, _ := hexastore.props.GetKey(second)
-			return hexastore.QueryXPX(propId)
+			propID, _ := hexastore.props.GetKey(second)
+			return hexastore.QueryXPX(propID)
 		} // XPO
 
-		propId, _ := hexastore.props.GetKey(second)
-		objId, _ := hexastore.entities.GetKey(third)
-		return hexastore.QueryXPO(propId, objId)
+		propID, _ := hexastore.props.GetKey(second)
+		objID, _ := hexastore.entities.GetKey(third)
+		return hexastore.QueryXPO(propID, objID)
 	} else if isSparqlVariable(second) { // SX?
-		subjId, _ := hexastore.entities.GetKey(first)
+		subjID, _ := hexastore.entities.GetKey(first)
 		if isSparqlVariable(third) { // SXX
-			return hexastore.QuerySXX(subjId)
+			return hexastore.QuerySXX(subjID)
 		} // SXO
-		objId, _ := hexastore.entities.GetKey(third)
-		return hexastore.QuerySXO(subjId, objId)
+		objID, _ := hexastore.entities.GetKey(third)
+		return hexastore.QuerySXO(subjID, objID)
 	} else if isSparqlVariable(third) { // SPX
-		subjId, _ := hexastore.entities.GetKey(first)
-		propId, _ := hexastore.props.GetKey(second)
-		return hexastore.QuerySPX(subjId, propId)
+		subjID, _ := hexastore.entities.GetKey(first)
+		propID, _ := hexastore.props.GetKey(second)
+		return hexastore.QuerySPX(subjID, propID)
 	} // SPO
 
-	subjId, _ := hexastore.entities.GetKey(first)
-	propId, _ := hexastore.props.GetKey(second)
-	objId, _ := hexastore.entities.GetKey(third)
-	return hexastore.QuerySPO(subjId, propId, objId)
+	subjID, _ := hexastore.entities.GetKey(first)
+	propID, _ := hexastore.props.GetKey(second)
+	objID, _ := hexastore.entities.GetKey(third)
+	return hexastore.QuerySPO(subjID, propID, objID)
 }
 
 func mapTriplePartsToVars(store *Hexastore, queryModel *simplesparql.Select, results *[]Triple) (mappedParts map[string][]string) {
