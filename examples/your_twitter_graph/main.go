@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/alecthomas/repr"
 	"github.com/thundergolfer/simplegraphdb"
 )
 
@@ -18,6 +17,6 @@ func main() {
 		results := simplegraphdb.RunQuery(query, store)
 		fmt.Println("Result: ")
 		fmt.Println("-------------------------------------------------------------------------")
-		repr.Println(simplegraphdb.PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
+		fmt.Println(results)
 	}
 }
