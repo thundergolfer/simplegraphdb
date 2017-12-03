@@ -14,10 +14,10 @@ func check(e error) {
 }
 
 func (db Db) toString() string {
-	return toJson(db)
+	return toJSON(db)
 }
 
-func toJson(db interface{}) string {
+func toJSON(db interface{}) string {
 	bytes, err := json.Marshal(db)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -137,36 +137,46 @@ func PresentTriple(t *Triple, props *PropDict, entities *EntityDict) string {
 	return fmt.Sprintf("%s -> %s -> %s", entities.m[t.Subject], props.m[t.Prop], entities.m[t.Object])
 }
 
+func (store Hexastore) ResolveEntity(id int) string {
+	val, _ := store.entities.Get(id)
+	return val
+}
+
+func (store Hexastore) ResolveProp(id int) string {
+	val, _ := store.props.Get(id)
+	return val
+}
+
 func (store Hexastore) Add(subject, property, object, value string) bool {
-	subjectId, propId, objectId := store.MapStringsToIds(subject, property, object)
-	triple := MakeTriple(subjectId, propId, objectId, value)
+	subjectId, propID, objectId := store.MapStringsToIds(subject, property, object)
+	triple := MakeTriple(subjectId, propID, objectId, value)
 
 	store.add(triple)
 
 	return true
 }
 
-func (store Hexastore) MapIdsToStrings(subjId, propId, objectId int) (string, string, string) {
-	subject, _ := store.entities.Get(subjId)
+func (store Hexastore) MapIdsToStrings(subjID, propID, objectId int) (string, string, string) {
+	subject, _ := store.entities.Get(subjID)
 	object, _ := store.entities.Get(objectId)
-	prop, _ := store.props.Get(propId)
+	prop, _ := store.props.Get(propID)
 
 	return subject, prop, object
 }
 
-func (store Hexastore) MapStringsToIds(subject, property, object string) (subjId, propId, objId int) {
+func (store Hexastore) MapStringsToIds(subject, property, object string) (subjID, propID, objID int) {
 	var ok bool
-	subjId, ok = store.entities.GetKey(subject)
+	subjID, ok = store.entities.GetKey(subject)
 	if !ok {
-		subjId = store.entities.Put(subject)
+		subjID = store.entities.Put(subject)
 	}
-	propId, ok = store.props.GetKey(property)
+	propID, ok = store.props.GetKey(property)
 	if !ok {
-		propId = store.props.Put(property)
+		propID = store.props.Put(property)
 	}
-	objId, ok = store.entities.GetKey(object)
+	objID, ok = store.entities.GetKey(object)
 	if !ok {
-		objId = store.entities.Put(object)
+		objID = store.entities.Put(object)
 	}
 
 	_ = ok // TODO fix this weirdness
@@ -244,9 +254,9 @@ func (store Hexastore) remove(t *Triple) {
 	}
 }
 
-func (store Hexastore) QuerySXX(subjId int) *[]Triple {
+func (store Hexastore) QuerySXX(subjID int) *[]Triple {
 	res := []Triple{}
-	relevant := store.SPO[subjId]
+	relevant := store.SPO[subjID]
 
 	if relevant == nil {
 		return &[]Triple{}
@@ -254,7 +264,7 @@ func (store Hexastore) QuerySXX(subjId int) *[]Triple {
 
 	for prop, objMap := range relevant {
 		for obj, value := range objMap {
-			currTriple := MakeTriple(subjId, prop, obj, value)
+			currTriple := MakeTriple(subjID, prop, obj, value)
 			res = append(res, *currTriple)
 		}
 	}
@@ -262,39 +272,39 @@ func (store Hexastore) QuerySXX(subjId int) *[]Triple {
 	return &res
 }
 
-func (store Hexastore) QuerySPX(subjId, propId int) *[]Triple {
+func (store Hexastore) QuerySPX(subjID, propID int) *[]Triple {
 	res := []Triple{}
-	relevant := store.SPO[subjId]
+	relevant := store.SPO[subjID]
 
 	if relevant == nil {
 		return &[]Triple{}
 	}
 
-	properties := relevant[propId]
+	properties := relevant[propID]
 
-	for objId, value := range properties {
-		currTriple := MakeTriple(subjId, propId, objId, value)
+	for objID, value := range properties {
+		currTriple := MakeTriple(subjID, propID, objID, value)
 		res = append(res, *currTriple)
 	}
 
 	return &res
 }
 
-func (store Hexastore) QuerySXO(subjId, objId int) *[]Triple {
+func (store Hexastore) QuerySXO(subjID, objID int) *[]Triple {
 	return &[]Triple{}
 }
 
-func (store Hexastore) QueryXPX(propId int) *[]Triple {
+func (store Hexastore) QueryXPX(propID int) *[]Triple {
 	res := []Triple{}
-	relevant := store.PSO[propId]
+	relevant := store.PSO[propID]
 
 	if relevant == nil {
 		return &[]Triple{}
 	}
 
-	for subjId, objMap := range relevant {
-		for objId, value := range objMap {
-			currTriple := MakeTriple(subjId, propId, objId, value)
+	for subjID, objMap := range relevant {
+		for objID, value := range objMap {
+			currTriple := MakeTriple(subjID, propID, objID, value)
 			res = append(res, *currTriple)
 		}
 	}
@@ -302,39 +312,39 @@ func (store Hexastore) QueryXPX(propId int) *[]Triple {
 	return &res
 }
 
-func (store Hexastore) QueryXPO(propId, objId int) *[]Triple {
+func (store Hexastore) QueryXPO(propID, objID int) *[]Triple {
 	res := []Triple{}
-	relevant := store.POS[propId]
+	relevant := store.POS[propID]
 
 	if relevant == nil {
 		return &[]Triple{}
 	}
 
-	subjects := relevant[objId]
+	subjects := relevant[objID]
 
 	if subjects == nil {
 		return &[]Triple{}
 	}
 
-	for subjId, value := range subjects {
-		currTriple := MakeTriple(subjId, propId, objId, value)
+	for subjID, value := range subjects {
+		currTriple := MakeTriple(subjID, propID, objID, value)
 		res = append(res, *currTriple)
 	}
 
 	return &res
 }
 
-func (store Hexastore) QueryXXO(objId int) *[]Triple {
+func (store Hexastore) QueryXXO(objID int) *[]Triple {
 	res := []Triple{}
-	relevant := store.OPS[objId]
+	relevant := store.OPS[objID]
 
 	if relevant == nil {
 		return &[]Triple{}
 	}
 
-	for propId, subjMap := range relevant {
-		for subjId, value := range subjMap {
-			currTriple := MakeTriple(subjId, propId, objId, value)
+	for propID, subjMap := range relevant {
+		for subjID, value := range subjMap {
+			currTriple := MakeTriple(subjID, propID, objID, value)
 			res = append(res, *currTriple)
 		}
 	}
@@ -342,9 +352,9 @@ func (store Hexastore) QueryXXO(objId int) *[]Triple {
 	return &res
 }
 
-func (store Hexastore) QuerySPO(subjId, propId, objId int) *[]Triple {
-	if value, ok := store.SPO[subjId][propId][objId]; ok {
-		triple := MakeTriple(subjId, propId, objId, value)
+func (store Hexastore) QuerySPO(subjID, propID, objID int) *[]Triple {
+	if value, ok := store.SPO[subjID][propID][objID]; ok {
+		triple := MakeTriple(subjID, propID, objID, value)
 		return &[]Triple{*triple}
 	}
 
@@ -354,10 +364,10 @@ func (store Hexastore) QuerySPO(subjId, propId, objId int) *[]Triple {
 func (store Hexastore) QueryXXX() *[]Triple {
 	res := []Triple{}
 
-	for subjId, propMap := range store.SPO {
-		for propId, objMap := range propMap {
-			for objId, value := range objMap {
-				currTriple := MakeTriple(subjId, propId, objId, value)
+	for subjID, propMap := range store.SPO {
+		for propID, objMap := range propMap {
+			for objID, value := range objMap {
+				currTriple := MakeTriple(subjID, propID, objID, value)
 				res = append(res, *currTriple)
 			}
 		}
