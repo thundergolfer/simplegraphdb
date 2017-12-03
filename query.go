@@ -8,6 +8,8 @@ import (
 	"github.com/thundergolfer/simplegraphdb/simplesparql"
 )
 
+// RunQuery takes `simplesparql` valid string query and a hexastore instance
+// and returns a formatted table of query results
 func RunQuery(query string, hexastore *Hexastore) string {
 	queryModel := simplesparql.Parse(query)
 
