@@ -15,5 +15,4 @@ func main() {
 	store := simplegraphdb.InitTestHexastore()
 	result = simplegraphdb.RunQuery(query, store)
 	fmt.Println(result)
-	// repr.Println(simplegraphdb.PresentableResults(results, store), repr.Indent("  "), repr.OmitEmpty(true))
 }
