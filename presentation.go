@@ -2,21 +2,23 @@ package simplegraphdb
 
 import "strings"
 
+// PresentResultGrid converts the 2D grid of string elements into a
+// single string representation of a table for presentation via stdout
 func PresentResultGrid(resultsGrid *[][]string) (presentable string) {
-	max_cell_size := 30
+	maxCellSize := 30
 	presentable = ""
 	for i, row := range *resultsGrid {
 		for _, col := range row {
-			curr_len := len(col)
-			if curr_len >= max_cell_size {
-				presentable += col[:max_cell_size-2] + ".." + " | "
+			currLen := len(col)
+			if currLen >= maxCellSize {
+				presentable += col[:maxCellSize-2] + ".." + " | "
 			} else {
-				presentable += rightPad2Len(col, " ", max_cell_size) + " | "
+				presentable += rightPad2Len(col, " ", maxCellSize) + " | "
 			}
 		}
 		presentable += "\n"
 		if i == 0 {
-			presentable += strings.Repeat("-", (max_cell_size+2)*len(row)) + "\n"
+			presentable += strings.Repeat("-", (maxCellSize+2)*len(row)) + "\n"
 		}
 	}
 	return

@@ -3,7 +3,7 @@ package simplegraphdb
 import "testing"
 
 func TestMakeTriple(t *testing.T) {
-	var triple *Triple = MakeTriple(1, 2, 3, "1234")
+	triple := MakeTriple(1, 2, 3, "1234")
 
 	if triple.Subject != 1 {
 		t.Error("Expected 1, got ", triple.Subject)
@@ -20,7 +20,7 @@ func TestMakeTriple(t *testing.T) {
 }
 
 func TestNewHexastore(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 
 	if hexastore.SPO == nil || hexastore.SOP == nil || hexastore.POS == nil || hexastore.PSO == nil || hexastore.OSP == nil || hexastore.OPS == nil {
 		t.Error("Didn't initialise Hexastore correctly")
@@ -28,7 +28,7 @@ func TestNewHexastore(t *testing.T) {
 }
 
 func TestPresentableResults(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	var testTriple = Triple{Subject: 0, Prop: 0, Object: 1}
 	var testTripleTwo = Triple{Subject: 0, Prop: 0, Object: 2}
 
@@ -62,16 +62,16 @@ func TestGetKey(t *testing.T) {
 	dict.m[dict.NextKey] = "hello world"
 	dict.m[dict.NextKey+1] = "goodbye world"
 
-	hello_world_key, ok := dict.GetKey("hello world")
-	if hello_world_key != 0 {
-		t.Error("Expected 0, got ", hello_world_key)
+	helloWorldKey, ok := dict.GetKey("hello world")
+	if helloWorldKey != 0 {
+		t.Error("Expected 0, got ", helloWorldKey)
 	}
 	if ok != true {
 		t.Error("Expected success variable to be true")
 	}
-	goodbye_world_key, ok := dict.GetKey("goodbye world")
-	if goodbye_world_key != 1 {
-		t.Error("Expected 1, got ", goodbye_world_key)
+	goodbyeWorldKey, ok := dict.GetKey("goodbye world")
+	if goodbyeWorldKey != 1 {
+		t.Error("Expected 1, got ", goodbyeWorldKey)
 	}
 	if ok != true {
 		t.Error("Expected success variable to be true")
@@ -79,7 +79,7 @@ func TestGetKey(t *testing.T) {
 }
 
 func TestHexastoreAdd(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
 
 	hexastore.add(&triple)
@@ -105,7 +105,7 @@ func TestHexastoreAdd(t *testing.T) {
 }
 
 func TestHexastoreRemove(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
 
 	hexastore.add(&triple)
@@ -138,7 +138,7 @@ func TestHexastoreRemove(t *testing.T) {
 }
 
 func TestQuerySXX(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
 	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
 	triple3 := Triple{Subject: 1, Prop: 3, Object: 3, Value: "hello world"}
@@ -157,7 +157,7 @@ func TestQuerySXX(t *testing.T) {
 }
 
 func TestQuerySPX(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
 	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
 	triple3 := Triple{Subject: 1, Prop: 3, Object: 3, Value: "hello world"}
@@ -176,7 +176,7 @@ func TestQuerySPX(t *testing.T) {
 }
 
 func TestQueryXPO(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
 	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
 	triple3 := Triple{Subject: 4, Prop: 3, Object: 3, Value: "hello world"}
@@ -201,7 +201,7 @@ func TestQueryXPO(t *testing.T) {
 }
 
 func TestQueryXXX(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello world"}
 	triple2 := Triple{Subject: 2, Prop: 2, Object: 3, Value: "hello world"}
 	triple3 := Triple{Subject: 4, Prop: 3, Object: 3, Value: "hello world"}
@@ -220,7 +220,7 @@ func TestQueryXXX(t *testing.T) {
 }
 
 func TestQuerySPO(t *testing.T) {
-	var hexastore *Hexastore = newHexastore()
+	hexastore := newHexastore()
 	triple1 := Triple{Subject: 1, Prop: 2, Object: 3, Value: "hello mars"}
 	hexastore.add(&triple1)
 
