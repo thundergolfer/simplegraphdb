@@ -490,10 +490,8 @@ func InitHexastoreFromJSONRows(dbFilePath string) (*Hexastore, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		json.Unmarshal(scanner.Bytes(), &entry)
-		db.Triples = append(db.Triples)
+		db.Triples = append(db.Triples, entry)
 	}
-
-	// json.Unmarshal(dat, &db)
 
 	store := newHexastore()
 	_ = loadHexastore(db, store)
