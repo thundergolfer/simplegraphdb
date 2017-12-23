@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function setup_creds {
   echo "You will need to create a Twitter App to get consumer keys."
@@ -36,4 +37,13 @@ then
   echo "creds file already exists!. moving on to scraping"
 else
   setup_creds
+fi
+
+if command -v python3 &>/dev/null; then
+  echo "****************************************************"
+  echo "Scraping Twitter network"
+  echo "****************************************************"
+  python3 $script_dir/scrape_twitter_followers.py
+else
+  echo "Python 3 is not installed. `python3` must be installed and on the PATH"
 fi

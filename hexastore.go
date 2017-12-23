@@ -437,8 +437,9 @@ func loadHexastore(db tripleDb, store *Hexastore) error {
 
 // InitTestHexastore is a temporary method for building a basic Hexastore
 // from a test JSON file
-func InitTestHexastore() *Hexastore {
-	return InitHexastoreFromJSON("./db.json")
+func InitTestHexastore() (*Hexastore, error) {
+	store, err := InitHexastoreFromJSON("./db.json")
+	return store, err
 }
 
 // InitHexastoreFromJSON creates a new hexastore and fills it with triples
@@ -448,16 +449,18 @@ func InitTestHexastore() *Hexastore {
 //    ...
 //    ]
 // }
-func InitHexastoreFromJSON(dbFilePath string) *Hexastore {
+func InitHexastoreFromJSON(dbFilePath string) (*Hexastore, error) {
 	var db tripleDb
 
 	dat, err := ioutil.ReadFile(dbFilePath)
-	check(err)
+	if err != nil {
+		return nil, err
+	}
 
 	json.Unmarshal(dat, &db)
 
 	store := newHexastore()
 	_ = loadHexastore(db, store)
 
-	return store
+	return store, nil
 }

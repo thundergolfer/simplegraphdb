@@ -8,8 +8,24 @@ import (
 	"github.com/thundergolfer/simplegraphdb"
 )
 
+const (
+	defaultTwitterDb  string = "../../scripts/my_twitter_example_db.json"
+	personalTwitterDb string = "../../scripts/your_twitter_example_db.json"
+)
+
 func main() {
-	store := simplegraphdb.InitHexastoreFromJSON("../../scripts/your_twitter_example_db.json")
+	store, err := simplegraphdb.InitHexastoreFromJSON(personalTwitterDb)
+
+	if err != nil {
+		fmt.Println("INFO: Using default Twitter network DB")
+		store, err = simplegraphdb.InitHexastoreFromJSON(defaultTwitterDb)
+
+		if err != nil {
+			fmt.Printf("Error: %v \n", err.Error())
+			os.Exit(1)
+		}
+	}
+
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter simpleSPARQL style query: ")
