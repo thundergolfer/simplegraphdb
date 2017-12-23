@@ -34,19 +34,17 @@ if api.verify_credentials:
 else:
     print("There was a mistake made when receiving credentials. Remove 'private_twitter_credentials.json' and try the script again")
 
-#us = tweepy.Cursor(api.followers, screen_name=twitter_handle).items()
 db = {"triples": []}
 
 your_friends = tweepy.Cursor(api.friends, screen_name=twitter_handle).items()
-process_group(twitter_handle, "follows", [user.screen_name for user in your_friends])
+your_friends = [user.screen_name for user in your_friends]  # make a list because we can't reuse a tweepy.Cursor @ l48
+process_group(twitter_handle, "follows", your_friends)
 
 who_follows_you = tweepy.Cursor(api.followers, screen_name=twitter_handle).items()
 process_group(twitter_handle, "is_followed_by", [user.screen_name for user in who_follows_you])
 
 
 for user in your_friends:
-    import pdb
-    pdb.set_trace()
     their_friends = tweepy.Cursor(api.friends_ids, screen_name=user.screen_name).items()
     process_group(user.screen_name, "follows", [u.screen_name for u in api.lookup_users(user_ids=their_friends)])
     who_follows_them = tweepy.Cursor(api.followers_ids, screen_name=user.screen_name).items()
