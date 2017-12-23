@@ -20,7 +20,7 @@ this library. To do so:
 4. Run `./create_twitter_followers_graph_example_db.sh`. **Note:** If you don't have a Twitter account, skip this step and a default Twitter network (mine) will be used.
 5. Go into the `/examples/your_twitter_graph/` folder and run `go build`
 6. A binary is created, which you can run with `./your_twitter_graph`
-7. Query the network with `simplesparql` syntax (See the `README.md`
+7. Query the n etwork with `simplesparql` syntax (See the `README.md`
    section on it below).
 
 ##### Example starting query
