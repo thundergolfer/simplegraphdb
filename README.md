@@ -15,19 +15,19 @@ As a simple demo, we can scrape your Twitter network and query it with
 this library. To do so:
 
 1. `git clone` this library to your designated Go workspace
-2. Run `./create_twitter_followers_graph_example_db.sh`. **Note:** If
-   you don't have a Twitter account, skip this step and a default
-Twitter network (mine) will be used.
-3. Go into the `/examples/your_twitter_graph/` folder and run `go build`
-4. A binary is created, which you can run with `./your_twitter_graph`
-5. Query the network with `simplesparql` syntax (See the `README.md`
+2. Go into the `scripts/` directory
+3. Install script dependencies with `pip install -r requirements.txt` (consider using `virtualenv`).
+4. Run `./create_twitter_followers_graph_example_db.sh`. **Note:** If you don't have a Twitter account, skip this step and a default Twitter network (mine) will be used.
+5. Go into the `/examples/your_twitter_graph/` folder and run `go build`
+6. A binary is created, which you can run with `./your_twitter_graph`
+7. Query the network with `simplesparql` syntax (See the `README.md`
    section on it below).
 
 ##### Example starting query
 
-Get all the people that you follow with: 
+Get all the people that you follow with:
 
-`SELECT ?x WHERE { '<YOUR SCREEN NAME' 'follows' ?x }` 
+`SELECT ?x WHERE { '<YOUR SCREEN NAME' 'follows' ?x }`
 
 ----------
 
@@ -49,7 +49,7 @@ on the graph connected by a 'follows' edge from the vertice
 `'jonobelotti_IO'`.
 
 You can use up to a maximum of 3 variables in a `WHERE` clause. All
-`WHERE` clauses must have exactly three components. For example: 
+`WHERE` clauses must have exactly three components. For example:
 
 `SELECT ?screen_name, ?property WHERE { 'jonobelotti_IO' ?property
 ?screen_name }`
