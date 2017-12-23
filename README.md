@@ -15,7 +15,7 @@ As a simple demo, we can scrape your Twitter network and query it with
 this library. To do so:
 
 1. `git clone` this library to your designated Go workspace
-2. Run `./create_twitter_followers_graph_example_db.sh`. **Note:** If
+2. Run `./scripts/create_twitter_followers_graph_example_db.sh`. **Note:** If
    you don't have a Twitter account, skip this step and a default
 Twitter network (mine) will be used.
 3. Go into the `/examples/your_twitter_graph/` folder and run `go build`
