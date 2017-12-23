@@ -54,5 +54,5 @@ You can use up to a maximum of 3 variables in a `WHERE` clause. All
 `SELECT ?screen_name, ?property WHERE { 'jonobelotti_IO' ?property
 ?screen_name }`
 
-will essential return all triples in the graph involving the
+will essentially return all triples in the graph involving the
 `'jonobelotti_IO'` vertice.
