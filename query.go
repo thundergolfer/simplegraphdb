@@ -156,7 +156,6 @@ func extractReturnVariables(queryModel *(simplesparql.Select)) (returnVars []str
 		variable := getVariableFromExpression(expr)
 		returnVars = append(returnVars, variable)
 	}
-
 	return
 }
 
@@ -202,7 +201,6 @@ func validateVariablesBalance(selectExprVars, whereExprVars []string) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -214,7 +212,7 @@ func extractTripleExpressionElements(queryModel *(simplesparql.Select)) (first, 
 	} else {
 		first = where.Expression.First.Var
 	}
-	//, where.Expression.Second, where.Expression.Third.Value
+
 	if where.Expression.Second.Value != nil {
 		second = *where.Expression.Second.Value.String
 	} else {
@@ -226,6 +224,5 @@ func extractTripleExpressionElements(queryModel *(simplesparql.Select)) (first, 
 	} else {
 		third = where.Expression.Third.Var
 	}
-
 	return
 }

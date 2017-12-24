@@ -9,10 +9,15 @@ import (
 	"github.com/thundergolfer/simplegraphdb"
 )
 
+func initTestHexastore() (*simplegraphdb.HexastoreDB, error) {
+	store, err := simplegraphdb.InitHexastoreFromJSON("./db.json")
+	return store, err
+}
+
 func main() {
 	fmt.Println("vim-go")
 	var result string
-	store, err := simplegraphdb.InitTestHexastore()
+	store, err := initTestHexastore()
 	if err != nil {
 		fmt.Println("Error: failed to initialise example store")
 		os.Exit(1)
