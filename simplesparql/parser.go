@@ -1,3 +1,5 @@
+// Package simplesparql contains a SQL parser modified to parse a
+// restricted form in the SPAQL language, dubbed 'simplesparql'
 package simplesparql
 
 import (
@@ -7,7 +9,7 @@ import (
 
 var (
 	sqlLexer = lexer.Unquote(lexer.Upper(lexer.Must(lexer.Regexp(`(\s+)`+
-		`|(?P<Keyword>(?i)SELECT|FROM|TOP|DISTINCT|ALL|WHERE|GROUP|BY|HAVING|UNION|MINUS|EXCEPT|INTERSECT|ORDER|LIMIT|OFFSET|TRUE|FALSE|NULL|IS|NOT|ANY|SOME|BETWEEN|AND|OR|LIKE|AS|IN)`+
+		`|(?P<Keyword>(?i)SELECT|FROM|DISTINCT|ALL|WHERE|GROUP|BY|MINUS|EXCEPT|INTERSECT|ORDER|LIMIT|OFFSET|TRUE|FALSE|NULL|IS|NOT|ANY|BETWEEN|AND|OR|LIKE|AS|IN)`+
 		`|(?P<Ident>[a-zA-Z_][a-zA-Z0-9_]*)`+
 		`|(?P<Variable>\?[a-zA-Z_][a-zA-Z0-9_]*)`+
 		`|(?P<Number>[-+]?\d*\.?\d+([eE][-+]?\d+)?)`+

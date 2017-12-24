@@ -9,7 +9,7 @@ Management"*](http://www.vldb.org/pvldb/1/1453965.pdf). The project also
 explores the [SPARQL](https://en.wikipedia.org/wiki/SPARQL) graph query language, by implementing a simplified
 version of it which I dubbed `simplesparql`.
 
-### Introduction - Usage
+## Introduction - Usage
 
 As a simple demo, we can scrape your Twitter network and query it with
 this library. To do so:
@@ -29,9 +29,53 @@ Get all the people that you follow with:
 
 `SELECT ?x WHERE { '<YOUR SCREEN NAME>' 'follows' ?x }`
 
+## Usage - Golang Package
+
+1 .Add to project:
+
+`go get github.com/thundergolfer/simplegraphdb` or `glide get github.com/thundergolfer/simplegraphdb`
+
+2. Add to imports:
+
+```golang
+import (
+  "github.com/thundergolfer/simplegraphdb"
+)
+```
+
+#### Package Interface
+
+###### `InitHexastoreFromJSONRows(filename string) (*HexastoreDB, error)`
+
+You can setup a Hexastore by passing a filepath to a `.json` file with the following format:
+
+```
+{"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
+{"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
+{"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
+...
+...
+```
+
+###### `RunQuery(query string, hexastore Hexastore) (string, error)`
+
+Run a well-formed `simplesparql` query (see more below) against a Hexastore instance. Just returns a printable table of results like:
+
+```
+?target                | ?prop                  |
+------------------------------------------------
+Cow                    | follows                |
+Apple                  | follows                |
+```
+
+###### `SaveToJSONRows(filename, *Hexastore) error`
+
+> Not yet implemented, but coming soon
+
+
 ----------
 
-### simplesparql
+## simplesparql
 
 `simplesparql` is an implementation of a subset of the SPARQL query
 language. It supports the asking of basic questions about a graph,
