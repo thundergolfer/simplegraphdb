@@ -57,7 +57,7 @@ You can setup a Hexastore by passing a filepath to a `.json` file with the follo
 ...
 ```
 
-###### `RunQuery(query string, hexastore Hexastore) (string, error)`
+###### `RunQuery(query string, store Hexastore) (string, error)`
 
 Run a well-formed `simplesparql` query (see more below) against a Hexastore instance. Just returns a printable table of results like:
 
@@ -68,7 +68,7 @@ Cow                    | follows                |
 Apple                  | follows                |
 ```
 
-###### `SaveToJSONRows(filename, *Hexastore) error`
+###### `SaveToJSONRows(filename string, store Hexastore) error`
 
 > Not yet implemented, but coming soon
 
