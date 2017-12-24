@@ -48,7 +48,6 @@ windows:
 
 test:
 				go test
-				cd - >/dev/null
 
 vet:
 				-cd ${BUILD_DIR}; \
