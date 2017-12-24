@@ -1,23 +1,31 @@
 package simplegraphdb
 
 import (
-	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/thundergolfer/simplegraphdb/simplesparql"
 )
 
-// RunQuery takes `simplesparql` valid string query and a hexastore instance
+// RunQuery takes `simplesparql` valid string query and a Hexastore instance
 // and returns a formatted table of query results
 func RunQuery(query string, hexastore Hexastore) (string, error) {
-	queryModel, err := simplesparql.Parse(query)
+	resultsGrid, err := runQuery(query, hexastore)
 	if err != nil {
 		return "", err
+	}
+	return PresentResultGrid(resultsGrid), nil
+}
+
+func runQuery(query string, hexastore Hexastore) ([][]string, error) {
+	queryModel, err := simplesparql.Parse(query)
+	if err != nil {
+		return [][]string{}, err
 	}
 
 	err = validateQuery(queryModel, hexastore)
 	if err != nil {
-		return "", err
+		return [][]string{}, err
 	}
 
 	returnVars := extractReturnVariables(queryModel)
@@ -25,10 +33,10 @@ func RunQuery(query string, hexastore Hexastore) (string, error) {
 	mappedResults := mapTriplePartsToVars(hexastore, queryModel, rawResults)
 	resultsGrid := buildResultsGrid(returnVars, mappedResults, len(*rawResults))
 
-	return PresentResultGrid(resultsGrid), nil
+	return resultsGrid, nil
 }
 
-func buildResultsGrid(returnVars []string, mappedResults map[string][]string, numResults int) *[][]string {
+func buildResultsGrid(returnVars []string, mappedResults map[string][]string, numResults int) [][]string {
 	stringResults := make([][]string, numResults+1)
 	stringResults[0] = returnVars // add header
 
@@ -39,7 +47,7 @@ func buildResultsGrid(returnVars []string, mappedResults map[string][]string, nu
 		}
 	}
 
-	return &stringResults
+	return stringResults
 }
 
 func retreiveQueryResults(queryModel *simplesparql.Select, hexastore Hexastore) *[]Triple {
@@ -124,19 +132,19 @@ func validateQuery(queryModel *(simplesparql.Select), hexastore Hexastore) error
 
 	ok = validateNoDuplicateVariables(returnVars)
 	if !ok {
-		return errors.New("Duplicate variable name in SELECT variables")
+		return fmt.Errorf("Duplicate variable name in SELECT variables")
 	}
 
 	ok = validateNoDuplicateVariables(tripleExprElems)
 	if !ok {
-		return errors.New("Duplicate variable name in WHERE expression variables")
+		return fmt.Errorf("Duplicate variable name in WHERE expression variables")
 	}
 
 	whereVars := getVariablesFromStrings(tripleExprElems...)
 
 	ok = validateVariablesBalance(returnVars, whereVars)
 	if !ok {
-		return errors.New("Cant fulfil SELECT expression with variables from WHERE expression")
+		return fmt.Errorf("Cant fulfil SELECT expression with variables from WHERE expression")
 	}
 
 	return nil

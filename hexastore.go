@@ -9,12 +9,6 @@ import (
 	"os"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func (db tripleDb) toString() string {
 	return toJSON(db)
 }

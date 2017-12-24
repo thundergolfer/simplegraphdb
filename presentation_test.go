@@ -21,9 +21,9 @@ func TestPresentResultGrid(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		actual := PresentResultGrid(&c.resultsGrid)
+		actual := PresentResultGrid(c.resultsGrid)
 		if c.expected != actual {
-			t.Errorf("Error: expected:\n%s\ngot:\n%s", c.expected, actual)
+			t.Errorf("Error: expected:\n%s\n\ngot:\n%s", c.expected, actual)
 		}
 	}
 }

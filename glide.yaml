@@ -3,3 +3,5 @@ import:
 - package: github.com/alecthomas/participle
   subpackages:
   - lexer
+- package: github.com/go-test/deep
+  version: v1.0.0

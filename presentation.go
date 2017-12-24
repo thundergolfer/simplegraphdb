@@ -4,10 +4,10 @@ import "strings"
 
 // PresentResultGrid converts the 2D grid of string elements into a
 // single string representation of a table for presentation via stdout
-func PresentResultGrid(resultsGrid *[][]string) (presentable string) {
+func PresentResultGrid(resultsGrid [][]string) (presentable string) {
 	maxCellSize := 30
 	presentable = ""
-	for i, row := range *resultsGrid {
+	for i, row := range resultsGrid {
 		for _, col := range row {
 			currLen := len(col)
 			if currLen >= maxCellSize {
