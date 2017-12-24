@@ -35,7 +35,10 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter simpleSPARQL style query: ")
 		query, _ := reader.ReadString('\n')
-		results := simplegraphdb.RunQuery(query, store)
+		results, err := simplegraphdb.RunQuery(query, store)
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Println("Result: ")
 		fmt.Println("-------------------------------------------------------------------------")
 		fmt.Println(results)
