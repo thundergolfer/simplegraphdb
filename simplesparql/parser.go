@@ -1,8 +1,6 @@
 package simplesparql
 
 import (
-	"log"
-
 	"github.com/alecthomas/participle"
 	"github.com/alecthomas/participle/lexer"
 )
@@ -144,12 +142,12 @@ type Array struct {
 	Expressions []*Expression `"(" @@ { "," @@ } ")"`
 }
 
-func Parse(query string) *Select {
+func Parse(query string) (*Select, error) {
 	sql := &Select{}
 	err := sqlParser.ParseString(query, sql)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return sql
+	return sql, nil
 }

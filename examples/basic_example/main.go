@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/thundergolfer/simplegraphdb"
@@ -22,7 +23,10 @@ func main() {
 	fmt.Println(exampleQuery)
 
 	fmt.Println("Result of example query: ")
-	result = simplegraphdb.RunQuery(exampleQuery, store)
+	result, err = simplegraphdb.RunQuery(exampleQuery, store)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(result)
 
 	fmt.Println("END DEMO\n---------------------------------")

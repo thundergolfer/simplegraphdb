@@ -2,7 +2,6 @@ package simplegraphdb
 
 import (
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/thundergolfer/simplegraphdb/simplesparql"
@@ -10,12 +9,15 @@ import (
 
 // RunQuery takes `simplesparql` valid string query and a hexastore instance
 // and returns a formatted table of query results
-func RunQuery(query string, hexastore *Hexastore) string {
-	queryModel := simplesparql.Parse(query)
-
-	_, err := validateQuery(queryModel, hexastore)
+func RunQuery(query string, hexastore *Hexastore) (string, error) {
+	queryModel, err := simplesparql.Parse(query)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
+	}
+
+	err = validateQuery(queryModel, hexastore)
+	if err != nil {
+		return "", err
 	}
 
 	returnVars := extractReturnVariables(queryModel)
@@ -23,7 +25,7 @@ func RunQuery(query string, hexastore *Hexastore) string {
 	mappedResults := mapTriplePartsToVars(hexastore, queryModel, rawResults)
 	resultsGrid := buildResultsGrid(returnVars, mappedResults, len(*rawResults))
 
-	return PresentResultGrid(resultsGrid)
+	return PresentResultGrid(resultsGrid), nil
 }
 
 func buildResultsGrid(returnVars []string, mappedResults map[string][]string, numResults int) *[][]string {
@@ -112,7 +114,7 @@ func mapTriplePartsToVars(store *Hexastore, queryModel *simplesparql.Select, res
 	return
 }
 
-func validateQuery(queryModel *(simplesparql.Select), hexastore *Hexastore) (bool, error) {
+func validateQuery(queryModel *(simplesparql.Select), hexastore *Hexastore) error {
 	var ok bool
 	_ = hexastore // TODO do validations against hexastore
 
@@ -122,22 +124,22 @@ func validateQuery(queryModel *(simplesparql.Select), hexastore *Hexastore) (boo
 
 	ok = validateNoDuplicateVariables(returnVars)
 	if !ok {
-		return false, errors.New("Duplicate variable name in SELECT variables")
+		return errors.New("Duplicate variable name in SELECT variables")
 	}
 
 	ok = validateNoDuplicateVariables(tripleExprElems)
 	if !ok {
-		return false, errors.New("Duplicate variable name in WHERE expression variables")
+		return errors.New("Duplicate variable name in WHERE expression variables")
 	}
 
 	whereVars := getVariablesFromStrings(tripleExprElems...)
 
 	ok = validateVariablesBalance(returnVars, whereVars)
 	if !ok {
-		return false, errors.New("Cant fulfil SELECT expression with variables from WHERE expression")
+		return errors.New("Cant fulfil SELECT expression with variables from WHERE expression")
 	}
 
-	return true, nil
+	return nil
 }
 
 func extractReturnVariables(queryModel *(simplesparql.Select)) (returnVars []string) {
@@ -151,9 +153,8 @@ func extractReturnVariables(queryModel *(simplesparql.Select)) (returnVars []str
 	return
 }
 
-func getVariableFromExpression(expr *(simplesparql.Expression)) (variable string) {
-	variable = expr.And.Or[0].Operand.Operand.Summand[0].LHS.LHS.Var
-	return
+func getVariableFromExpression(expr *(simplesparql.Expression)) string {
+	return expr.And.Or[0].Operand.Operand.Summand[0].LHS.LHS.Var
 }
 
 func isSparqlVariable(val string) bool {
@@ -162,7 +163,6 @@ func isSparqlVariable(val string) bool {
 
 func getVariablesFromStrings(strings ...string) (variables []string) {
 	variables = []string{}
-
 	for _, val := range strings {
 		if isSparqlVariable(val) {
 			variables = append(variables, val)
@@ -173,7 +173,6 @@ func getVariablesFromStrings(strings ...string) (variables []string) {
 
 func validateNoDuplicateVariables(vars []string) bool {
 	checker := map[string]bool{}
-
 	for _, elem := range vars {
 		if _, ok := checker[elem]; ok {
 			return false
@@ -187,7 +186,6 @@ func validateNoDuplicateVariables(vars []string) bool {
 
 func validateVariablesBalance(selectExprVars, whereExprVars []string) bool {
 	checker := map[string]bool{}
-
 	for _, elem := range whereExprVars {
 		checker[elem] = true
 	}
