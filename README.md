@@ -27,7 +27,7 @@ this library. To do so:
 
 Get all the people that you follow with:
 
-`SELECT ?x WHERE { '<YOUR SCREEN NAME' 'follows' ?x }`
+`SELECT ?x WHERE { '<YOUR SCREEN NAME>' 'follows' ?x }`
 
 ----------
 
