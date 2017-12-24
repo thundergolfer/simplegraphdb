@@ -112,10 +112,6 @@ func mapTriplePartsToVars(store *Hexastore, queryModel *simplesparql.Select, res
 	return
 }
 
-func processQueryResults(queryModel *simplesparql.Select, results *[]Triple) []string {
-	return []string{}
-}
-
 func validateQuery(queryModel *(simplesparql.Select), hexastore *Hexastore) (bool, error) {
 	var ok bool
 	_ = hexastore // TODO do validations against hexastore
