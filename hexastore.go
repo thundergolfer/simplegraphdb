@@ -107,9 +107,27 @@ func NewPropDict() *PropDict {
 	return &pD
 }
 
-// Hexastore is the triple-store data structure
+// Hexastore is the interface with which the simplesparql query
+// engine can interact with the graph data
+type Hexastore interface {
+	QueryXXX() *[]Triple
+	QuerySXX(subjID int) *[]Triple
+	QueryXPX(propID int) *[]Triple
+	QueryXXO(objID int) *[]Triple
+	QuerySPX(subjID, propID int) *[]Triple
+	QuerySXO(subjID, objID int) *[]Triple
+	QueryXPO(propID, objID int) *[]Triple
+	QuerySPO(subjID, propID, objID int) *[]Triple
+	Add(subject, property, object, value string) bool
+	GetPropKey(val string) (key int, ok bool)
+	GetEntityKey(val string) (key int, ok bool)
+	ResolveEntity(id int) string
+	ResolveProp(id int) string
+}
+
+// HexastoreDB is the triple-store data structure
 // driving the database
-type Hexastore struct {
+type HexastoreDB struct {
 	SPO      map[int]map[int]map[int]string
 	SOP      map[int]map[int]map[int]string
 	PSO      map[int]map[int]map[int]string
@@ -120,8 +138,8 @@ type Hexastore struct {
 	props    *PropDict
 }
 
-func newHexastore() *Hexastore {
-	var store Hexastore
+func newHexastore() *HexastoreDB {
+	var store HexastoreDB
 	store.SPO = make(map[int]map[int]map[int]string)
 	store.SOP = make(map[int]map[int]map[int]string)
 	store.PSO = make(map[int]map[int]map[int]string)
@@ -151,7 +169,7 @@ func MakeTriple(subject, prop, object int, value string) *Triple {
 
 // PresentableResults converts a slice of Triple objects to a slice of strings with
 // triple component IDs converted to their string value
-func PresentableResults(results *[]Triple, hexastore *Hexastore) *[]string {
+func PresentableResults(results *[]Triple, hexastore *HexastoreDB) *[]string {
 	presentables := []string{}
 	for _, triple := range *results {
 		presentables = append(presentables, PresentTriple(&triple, hexastore.props, hexastore.entities))
@@ -167,20 +185,30 @@ func PresentTriple(t *Triple, props *PropDict, entities *EntityDict) string {
 	return fmt.Sprintf("%s -> %s -> %s", entities.m[t.Subject], props.m[t.Prop], entities.m[t.Object])
 }
 
+// GetPropKey finds the integer id for a particular string value which is a property
+func (store *HexastoreDB) GetPropKey(val string) (int, bool) {
+	return store.props.GetKey(val)
+}
+
+// GetEntityKey finds the integer id for a particular string value which is an entity (object or subject)
+func (store *HexastoreDB) GetEntityKey(val string) (int, bool) {
+	return store.entities.GetKey(val)
+}
+
 // ResolveEntity finds the string value for a given entity ID
-func (store Hexastore) ResolveEntity(id int) string {
+func (store *HexastoreDB) ResolveEntity(id int) string {
 	val, _ := store.entities.Get(id)
 	return val
 }
 
 // ResolveProp finds the string value for a given property ID
-func (store Hexastore) ResolveProp(id int) string {
+func (store *HexastoreDB) ResolveProp(id int) string {
 	val, _ := store.props.Get(id)
 	return val
 }
 
 // Add introduces a new triple into the hexastore database
-func (store Hexastore) Add(subject, property, object, value string) bool {
+func (store *HexastoreDB) Add(subject, property, object, value string) bool {
 	subjectID, propID, objectID := store.MapStringsToIds(subject, property, object)
 	triple := MakeTriple(subjectID, propID, objectID, value)
 
@@ -190,7 +218,7 @@ func (store Hexastore) Add(subject, property, object, value string) bool {
 }
 
 // MapIdsToStrings finds the string values for each component ID of a triple
-func (store Hexastore) MapIdsToStrings(subjID, propID, objectID int) (string, string, string) {
+func (store *HexastoreDB) MapIdsToStrings(subjID, propID, objectID int) (string, string, string) {
 	subject, _ := store.entities.Get(subjID)
 	object, _ := store.entities.Get(objectID)
 	prop, _ := store.props.Get(propID)
@@ -200,7 +228,7 @@ func (store Hexastore) MapIdsToStrings(subjID, propID, objectID int) (string, st
 
 // MapStringsToIds finds the IDs for each string value of a triple, and creates and entry and returns
 // the new ID if a string value doesn't already exist
-func (store Hexastore) MapStringsToIds(subject, property, object string) (subjID, propID, objID int) {
+func (store *HexastoreDB) MapStringsToIds(subject, property, object string) (subjID, propID, objID int) {
 	var ok bool
 	subjID, ok = store.entities.GetKey(subject)
 	if !ok {
@@ -220,7 +248,7 @@ func (store Hexastore) MapStringsToIds(subject, property, object string) (subjID
 	return
 }
 
-func (store Hexastore) add(t *Triple) {
+func (store *HexastoreDB) add(t *Triple) {
 	var s, p, o int = t.Subject, t.Prop, t.Object
 	v := t.Value
 
@@ -268,7 +296,7 @@ func (store Hexastore) add(t *Triple) {
 	}
 }
 
-func (store Hexastore) remove(t *Triple) {
+func (store *HexastoreDB) remove(t *Triple) {
 	var s, p, o int = t.Subject, t.Prop, t.Object
 
 	var subjectIndx = store.SPO
@@ -291,7 +319,7 @@ func (store Hexastore) remove(t *Triple) {
 }
 
 // QuerySXX allows for querying the hexastore specifying only a Subject entity ID
-func (store Hexastore) QuerySXX(subjID int) *[]Triple {
+func (store *HexastoreDB) QuerySXX(subjID int) *[]Triple {
 	res := []Triple{}
 	relevant := store.SPO[subjID]
 
@@ -311,7 +339,7 @@ func (store Hexastore) QuerySXX(subjID int) *[]Triple {
 
 // QuerySPX allows for querying the hexastore specifying only a Subject entity ID
 // and a Property ID
-func (store Hexastore) QuerySPX(subjID, propID int) *[]Triple {
+func (store *HexastoreDB) QuerySPX(subjID, propID int) *[]Triple {
 	res := []Triple{}
 	relevant := store.SPO[subjID]
 
@@ -331,12 +359,12 @@ func (store Hexastore) QuerySPX(subjID, propID int) *[]Triple {
 
 // QuerySXO allows for querying the hexastore specifying only a Subject entity ID
 // and an Object entity ID
-func (store Hexastore) QuerySXO(subjID, objID int) *[]Triple {
+func (store *HexastoreDB) QuerySXO(subjID, objID int) *[]Triple {
 	return &[]Triple{}
 }
 
 // QueryXPX allows for querying the hexastore specifying only a Property ID
-func (store Hexastore) QueryXPX(propID int) *[]Triple {
+func (store *HexastoreDB) QueryXPX(propID int) *[]Triple {
 	res := []Triple{}
 	relevant := store.PSO[propID]
 
@@ -356,7 +384,7 @@ func (store Hexastore) QueryXPX(propID int) *[]Triple {
 
 // QueryXPO allows for querying the hexastore specifying only a Property ID
 // and an Object entity ID
-func (store Hexastore) QueryXPO(propID, objID int) *[]Triple {
+func (store *HexastoreDB) QueryXPO(propID, objID int) *[]Triple {
 	res := []Triple{}
 	relevant := store.POS[propID]
 
@@ -379,7 +407,7 @@ func (store Hexastore) QueryXPO(propID, objID int) *[]Triple {
 }
 
 // QueryXXO allows for querying the hexastore specifying only an Object entity ID
-func (store Hexastore) QueryXXO(objID int) *[]Triple {
+func (store *HexastoreDB) QueryXXO(objID int) *[]Triple {
 	res := []Triple{}
 	relevant := store.OPS[objID]
 
@@ -398,7 +426,7 @@ func (store Hexastore) QueryXXO(objID int) *[]Triple {
 }
 
 // QuerySPO allows for querying the hexastore for a specific triple
-func (store Hexastore) QuerySPO(subjID, propID, objID int) *[]Triple {
+func (store *HexastoreDB) QuerySPO(subjID, propID, objID int) *[]Triple {
 	if value, ok := store.SPO[subjID][propID][objID]; ok {
 		triple := MakeTriple(subjID, propID, objID, value)
 		return &[]Triple{*triple}
@@ -408,7 +436,7 @@ func (store Hexastore) QuerySPO(subjID, propID, objID int) *[]Triple {
 }
 
 // QueryXXX allows for a 'wildcard' query of the hexastore, returning all triples
-func (store Hexastore) QueryXXX() *[]Triple {
+func (store *HexastoreDB) QueryXXX() *[]Triple {
 	res := []Triple{}
 
 	for subjID, propMap := range store.SPO {
@@ -423,11 +451,11 @@ func (store Hexastore) QueryXXX() *[]Triple {
 	return &res
 }
 
-func (store Hexastore) dump() *[]Triple {
+func (store *HexastoreDB) dump() *[]Triple {
 	return store.QueryXXX()
 }
 
-func loadHexastore(db tripleDb, store *Hexastore) error {
+func loadHexastore(db tripleDb, store *HexastoreDB) error {
 	for _, entry := range db.Triples {
 		val := "xxxx" // TODO
 
@@ -439,7 +467,7 @@ func loadHexastore(db tripleDb, store *Hexastore) error {
 
 // InitTestHexastore is a temporary method for building a basic Hexastore
 // from a test JSON file
-func InitTestHexastore() (*Hexastore, error) {
+func InitTestHexastore() (*HexastoreDB, error) {
 	store, err := InitHexastoreFromJSON("./db.json")
 	return store, err
 }
@@ -451,7 +479,7 @@ func InitTestHexastore() (*Hexastore, error) {
 //    ...
 //    ]
 // }
-func InitHexastoreFromJSON(dbFilePath string) (*Hexastore, error) {
+func InitHexastoreFromJSON(dbFilePath string) (*HexastoreDB, error) {
 	var db tripleDb
 
 	dat, err := ioutil.ReadFile(dbFilePath)
@@ -473,7 +501,7 @@ func InitHexastoreFromJSON(dbFilePath string) (*Hexastore, error) {
 // {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
 // {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
 // {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
-func InitHexastoreFromJSONRows(dbFilePath string) (*Hexastore, error) {
+func InitHexastoreFromJSONRows(dbFilePath string) (*HexastoreDB, error) {
 	db := tripleDb{Triples: []Entry{}}
 	var entry Entry
 

@@ -9,7 +9,7 @@ import (
 
 // RunQuery takes `simplesparql` valid string query and a hexastore instance
 // and returns a formatted table of query results
-func RunQuery(query string, hexastore *Hexastore) (string, error) {
+func RunQuery(query string, hexastore Hexastore) (string, error) {
 	queryModel, err := simplesparql.Parse(query)
 	if err != nil {
 		return "", err
@@ -42,7 +42,7 @@ func buildResultsGrid(returnVars []string, mappedResults map[string][]string, nu
 	return &stringResults
 }
 
-func retreiveQueryResults(queryModel *simplesparql.Select, hexastore *Hexastore) *[]Triple {
+func retreiveQueryResults(queryModel *simplesparql.Select, hexastore Hexastore) *[]Triple {
 	first, second, third := extractTripleExpressionElements(queryModel)
 
 	if isSparqlVariable(first) { // X??
@@ -50,36 +50,36 @@ func retreiveQueryResults(queryModel *simplesparql.Select, hexastore *Hexastore)
 			if isSparqlVariable(third) { // XXX
 				return hexastore.QueryXXX()
 			}
-			objID, _ := hexastore.entities.GetKey(third)
+			objID, _ := hexastore.GetEntityKey(third)
 			return hexastore.QueryXXO(objID) // XXO
 		} else if isSparqlVariable(third) { // XPX
-			propID, _ := hexastore.props.GetKey(second)
+			propID, _ := hexastore.GetPropKey(second)
 			return hexastore.QueryXPX(propID)
 		} // XPO
 
-		propID, _ := hexastore.props.GetKey(second)
-		objID, _ := hexastore.entities.GetKey(third)
+		propID, _ := hexastore.GetPropKey(second)
+		objID, _ := hexastore.GetEntityKey(third)
 		return hexastore.QueryXPO(propID, objID)
 	} else if isSparqlVariable(second) { // SX?
-		subjID, _ := hexastore.entities.GetKey(first)
+		subjID, _ := hexastore.GetEntityKey(first)
 		if isSparqlVariable(third) { // SXX
 			return hexastore.QuerySXX(subjID)
 		} // SXO
-		objID, _ := hexastore.entities.GetKey(third)
+		objID, _ := hexastore.GetEntityKey(third)
 		return hexastore.QuerySXO(subjID, objID)
 	} else if isSparqlVariable(third) { // SPX
-		subjID, _ := hexastore.entities.GetKey(first)
-		propID, _ := hexastore.props.GetKey(second)
+		subjID, _ := hexastore.GetEntityKey(first)
+		propID, _ := hexastore.GetPropKey(second)
 		return hexastore.QuerySPX(subjID, propID)
 	} // SPO
 
-	subjID, _ := hexastore.entities.GetKey(first)
-	propID, _ := hexastore.props.GetKey(second)
-	objID, _ := hexastore.entities.GetKey(third)
+	subjID, _ := hexastore.GetEntityKey(first)
+	propID, _ := hexastore.GetPropKey(second)
+	objID, _ := hexastore.GetEntityKey(third)
 	return hexastore.QuerySPO(subjID, propID, objID)
 }
 
-func mapTriplePartsToVars(store *Hexastore, queryModel *simplesparql.Select, results *[]Triple) (mappedParts map[string][]string) {
+func mapTriplePartsToVars(store Hexastore, queryModel *simplesparql.Select, results *[]Triple) (mappedParts map[string][]string) {
 	var firstVarName, scndVarName, thirdVarName string
 	numResults := len(*results)
 	mappedParts = make(map[string][]string)
@@ -114,7 +114,7 @@ func mapTriplePartsToVars(store *Hexastore, queryModel *simplesparql.Select, res
 	return
 }
 
-func validateQuery(queryModel *(simplesparql.Select), hexastore *Hexastore) error {
+func validateQuery(queryModel *(simplesparql.Select), hexastore Hexastore) error {
 	var ok bool
 	_ = hexastore // TODO do validations against hexastore
 
