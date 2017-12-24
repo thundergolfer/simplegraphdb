@@ -1,7 +1,6 @@
 import json
 import tweepy
 import os
-import time
 
 this_files_path = os.path.dirname(os.path.realpath(__file__))
 private_twitter_creds_path = "private_twitter_credentials.json"
@@ -28,8 +27,6 @@ def process_group(subject, prop, group):
 with open(os.path.join(this_files_path, private_twitter_creds_path), 'r') as f:
     keys = json.load(f)
 
-print(keys)
-
 consumer_key = keys["consumer_key"]
 consumer_secret = keys["consumer_secret"]
 access_token = keys["access_token"]
@@ -47,23 +44,34 @@ else:
 
 db = {"triples": []}
 
-your_friends = tweepy.Cursor(api.friends, screen_name=twitter_handle).items()
-your_friends = [user for user in your_friends]  # make a list because we can't reuse a tweepy.Cursor @ l48
-process_group(twitter_handle, "follows", [user.screen_name for user in your_friends])
+# make a list because we can't re-use a tweepy.Cursor
+your_friends = [user for user in tweepy.Cursor(api.friends, screen_name=twitter_handle).items()]
+process_group(
+    twitter_handle,
+    "follows",
+    [user.screen_name for user in your_friends]
+)
 
 who_follows_you = tweepy.Cursor(api.followers, screen_name=twitter_handle).items()
-process_group(twitter_handle, "is_followed_by", [user.screen_name for user in who_follows_you])
+process_group(
+    twitter_handle,
+    "is_followed_by",
+    [user.screen_name for user in who_follows_you]
+)
 
-
+# explore one level deeper into network
 for user in your_friends:
     their_friends = list(tweepy.Cursor(api.friends_ids, screen_name=user.screen_name).items())
-    process_group(user.screen_name, "follows", [u.screen_name for u in api.lookup_users(user_ids=their_friends[:MAX_USER_PER_CALL])])
+    process_group(
+        user.screen_name,
+        "follows",
+        [u.screen_name for u in api.lookup_users(user_ids=their_friends[:MAX_USER_PER_CALL])]
+    )
     who_follows_them = list(tweepy.Cursor(api.followers_ids, screen_name=user.screen_name).items())
-    process_group(user.screen_name, "is_followed_by", [u.screen_name for u in api.lookup_users(user_ids=who_follows_them[:MAX_USER_PER_CALL])])
-
-# output_filepath = 'your_twitter_example_db.json'
-# print("Writing file to {}".format(output_filepath))
-# with open(output_filepath, 'w') as f:
-#     json.dump(db, f)
+    process_group(
+        user.screen_name,
+        "is_followed_by",
+        [u.screen_name for u in api.lookup_users(user_ids=who_follows_them[:MAX_USER_PER_CALL])]
+    )
 
 print("done!")
