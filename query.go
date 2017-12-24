@@ -23,7 +23,7 @@ func runQuery(query string, hexastore Hexastore) ([][]string, error) {
 		return [][]string{}, err
 	}
 
-	err = validateQuery(queryModel, hexastore)
+	err = validateQuery(queryModel)
 	if err != nil {
 		return [][]string{}, err
 	}
@@ -122,9 +122,8 @@ func mapTriplePartsToVars(store Hexastore, queryModel *simplesparql.Select, resu
 	return
 }
 
-func validateQuery(queryModel *(simplesparql.Select), hexastore Hexastore) error {
+func validateQuery(queryModel *(simplesparql.Select)) error {
 	var ok bool
-	_ = hexastore // TODO do validations against hexastore
 
 	returnVars := extractReturnVariables(queryModel)
 	first, second, third := extractTripleExpressionElements(queryModel)
