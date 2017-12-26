@@ -1,9 +1,11 @@
 package simplegraphdb
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -458,6 +460,40 @@ func InitHexastoreFromJSON(dbFilePath string) (*Hexastore, error) {
 	}
 
 	json.Unmarshal(dat, &db)
+
+	store := newHexastore()
+	_ = loadHexastore(db, store)
+
+	return store, nil
+}
+
+// InitHexastoreFromJSONRows creates a new hexastore and fills it with triples
+// from a file with one JSON object (a triple) per line. The schema is:
+//
+// {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
+// {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
+// {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
+func InitHexastoreFromJSONRows(dbFilePath string) (*Hexastore, error) {
+	db := tripleDb{Triples: []Entry{}}
+	var entry Entry
+
+	// dat, err := ioutil.ReadFile(dbFilePath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	file, err := os.Open(dbFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		json.Unmarshal(scanner.Bytes(), &entry)
+		db.Triples = append(db.Triples)
+	}
+
+	// json.Unmarshal(dat, &db)
 
 	store := newHexastore()
 	_ = loadHexastore(db, store)
