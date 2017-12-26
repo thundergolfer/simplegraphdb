@@ -5,15 +5,24 @@ import time
 
 this_files_path = os.path.dirname(os.path.realpath(__file__))
 private_twitter_creds_path = "private_twitter_credentials.json"
+output_filepath = 'your_twitter_example_db.json'
 
 MAX_USER_PER_CALL = 100
 
+# truncate file
+with open(output_filepath, 'w') as f:
+    pass
+
 
 def process_group(subject, prop, group):
-    for user in group:
-        triple = {"subject": subject, "prop": prop, "object": user}
-        db["triples"].append(triple)
-        print("Processed: {}".format(triple))
+    print("Writing file to {}".format(output_filepath))
+    with open(output_filepath, 'a') as f:
+        for user in group:
+            triple = {"subject": subject, "prop": prop, "object": user}
+            db["triples"].append(triple)
+            json.dump(triple, f)
+            f.write('\n')
+            print("Processed: {}".format(triple))
 
 
 with open(os.path.join(this_files_path, private_twitter_creds_path), 'r') as f:
@@ -52,9 +61,9 @@ for user in your_friends:
     who_follows_them = list(tweepy.Cursor(api.followers_ids, screen_name=user.screen_name).items())
     process_group(user.screen_name, "is_followed_by", [u.screen_name for u in api.lookup_users(user_ids=who_follows_them[:MAX_USER_PER_CALL])])
 
-output_filepath = 'your_twitter_example_db.json'
-print("Writing file to {}".format(output_filepath))
-with open(output_filepath, 'w') as f:
-    json.dump(db, f)
+# output_filepath = 'your_twitter_example_db.json'
+# print("Writing file to {}".format(output_filepath))
+# with open(output_filepath, 'w') as f:
+#     json.dump(db, f)
 
 print("done!")

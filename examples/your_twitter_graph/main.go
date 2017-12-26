@@ -14,7 +14,7 @@ const (
 )
 
 func main() {
-	store, err := simplegraphdb.InitHexastoreFromJSON(personalTwitterDb)
+	store, err := simplegraphdb.InitHexastoreFromJSONRows(personalTwitterDb)
 
 	if err != nil {
 		fmt.Println("INFO: Using default Twitter network DB")
