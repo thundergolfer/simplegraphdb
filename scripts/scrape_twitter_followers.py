@@ -6,6 +6,8 @@ import time
 this_files_path = os.path.dirname(os.path.realpath(__file__))
 private_twitter_creds_path = "private_twitter_credentials.json"
 
+MAX_USER_PER_CALL = 100
+
 
 def process_group(subject, prop, group):
     for user in group:
@@ -27,7 +29,7 @@ twitter_handle = keys["handle"] if keys["handle"][0] != '@' else keys["handle"][
 
 auth = tweepy.auth.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 if api.verify_credentials:
     print("Successfully authenticated!")
@@ -37,18 +39,18 @@ else:
 db = {"triples": []}
 
 your_friends = tweepy.Cursor(api.friends, screen_name=twitter_handle).items()
-your_friends = [user.screen_name for user in your_friends]  # make a list because we can't reuse a tweepy.Cursor @ l48
-process_group(twitter_handle, "follows", your_friends)
+your_friends = [user for user in your_friends]  # make a list because we can't reuse a tweepy.Cursor @ l48
+process_group(twitter_handle, "follows", [user.screen_name for user in your_friends])
 
 who_follows_you = tweepy.Cursor(api.followers, screen_name=twitter_handle).items()
 process_group(twitter_handle, "is_followed_by", [user.screen_name for user in who_follows_you])
 
 
 for user in your_friends:
-    their_friends = tweepy.Cursor(api.friends_ids, screen_name=user.screen_name).items()
-    process_group(user.screen_name, "follows", [u.screen_name for u in api.lookup_users(user_ids=their_friends)])
-    who_follows_them = tweepy.Cursor(api.followers_ids, screen_name=user.screen_name).items()
-    process_group(user.screen_name, "is_followed_by", [u.screen_name for u in api.lookup_users(user_ids=who_follows_them)])
+    their_friends = list(tweepy.Cursor(api.friends_ids, screen_name=user.screen_name).items())
+    process_group(user.screen_name, "follows", [u.screen_name for u in api.lookup_users(user_ids=their_friends[:MAX_USER_PER_CALL])])
+    who_follows_them = list(tweepy.Cursor(api.followers_ids, screen_name=user.screen_name).items())
+    process_group(user.screen_name, "is_followed_by", [u.screen_name for u in api.lookup_users(user_ids=who_follows_them[:MAX_USER_PER_CALL])])
 
 output_filepath = 'your_twitter_example_db.json'
 print("Writing file to {}".format(output_filepath))
