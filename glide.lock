@@ -1,0 +1,12 @@
+hash: 632684f6c794401b4d30dd7954c99d812f57e423c87011b3d4a80616011764b4
+updated: 2018-01-25T19:56:53.674623594+11:00
+imports:
+- name: github.com/alecthomas/participle
+  version: 48f3ab340563c5a91f83efdc0dc3f14f5d9364a2
+  subpackages:
+  - lexer
+- name: golang.org/x/exp
+  version: 072991165226c11c888c881218850e8318c2b32e
+  subpackages:
+  - ebnf
+testImports: []

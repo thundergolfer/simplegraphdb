@@ -26,3 +26,5 @@ scripts/private_twitter_credentials.json
 scripts/scrapingenv
 
 scripts/your_twitter_example_db.json
+
+vendor/

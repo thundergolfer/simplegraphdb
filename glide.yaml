@@ -1,0 +1,5 @@
+package: github.com/thundergolfer/simplegraphdb
+import:
+- package: github.com/alecthomas/participle
+  subpackages:
+  - lexer
