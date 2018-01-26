@@ -5,3 +5,4 @@ import:
   - lexer
 - package: github.com/go-test/deep
   version: v1.0.0
+- package: github.com/d4l3k/turtle

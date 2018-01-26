@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/d4l3k/turtle"
 )
 
 func (db tripleDb) toString() string {
@@ -506,6 +508,36 @@ func InitHexastoreFromJSONRows(dbFilePath string) (*HexastoreDB, error) {
 	for scanner.Scan() {
 		json.Unmarshal(scanner.Bytes(), &entry)
 		db.Triples = append(db.Triples, entry)
+	}
+
+	store := newHexastore()
+	err = loadHexastore(db, store)
+	if err != nil {
+		return nil, err
+	}
+
+	return store, nil
+}
+
+// InitHexastoreFromTurtle creates a new hexastore and fills it with triples
+// from a file in Terse RDF Triple Language, or 'Turtle' (https://www.w3.org/TeamSubmission/turtle/)
+func InitHexastoreFromTurtle(dbFilePath string) (*HexastoreDB, error) {
+	db := tripleDb{}
+
+	dat, err := ioutil.ReadFile(dbFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	triples, err := turtle.Parse(dat)
+	if err != nil {
+		return nil, err
+	}
+
+	db.Triples = make([]Entry, len(triples))
+	for i, t := range triples {
+		entry := Entry{Subject: t.Subj, Prop: t.Pred, Object: t.Obj}
+		db.Triples[i] = entry
 	}
 
 	store := newHexastore()

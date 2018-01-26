@@ -1,0 +1,40 @@
+@prefix gn: <http://www.geonames.org/ontology#>.
+@prefix geographis: <http://telegraphis.net/ontology/geography/geography#>.
+@prefix code: <http://telegraphis.net/ontology/measurement/code#>.
+@prefix measurement: <http://telegraphis.net/ontology/measurement/measurement#>.
+@prefix quantity: <http://www.telegraphis.net/ontology/measurement/quantity#>.
+@prefix metric: <http://www.telegraphis.net/ontology/measurement/metric#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+<http://telegraphis.net/data/countries/AD#AD> rdf:type gn:Country;
+    gn:name "Andorra"@en;
+    geographis:isoShortName "ANDORRA"@en, "ANDORRE"@fr;
+    gn:featureClass <http://www.geonames.org/ontology#A>;
+    gn:featureCode <http://www.geonames.org/ontology#A.PCL>;
+    gn:population "72000";
+    geographis:landArea [ rdf:type measurement:Measurement;
+        measurement:quantityMeasured quantity:Area;
+        measurement:unit metric:SquareKilometre;
+        rdf:value "468.0" ];
+    geographis:onContinent <http://telegraphis.net/data/continents/EU#EU>;
+    geographis:isoAlpha2 "AD";
+    geographis:isoAlpha3 "AND";
+    geographis:isoNumeric "020";
+    code:hasCode [ rdf:type code:Code;
+        code:inCodeScheme <http://telegraphis.net/data/countries/codeSchemes#iso31661al2>;
+        rdf:value "AD" ];
+    code:hasCode [ rdf:type code:Code;
+        code:inCodeScheme <http://telegraphis.net/data/countries/codeSchemes#iso31661al3>;
+        rdf:value "AND" ];
+    code:hasCode [ rdf:type code:Code;
+        code:inCodeScheme <http://telegraphis.net/data/countries/codeSchemes#iso31661num>;
+        rdf:value "020" ];
+    code:hasCode [ rdf:type geographis:Code;
+        code:inCodeScheme <http://telegraphis.net/data/countries/codeSchemes#fips>;
+        rdf:value "AN" ].
+<http://telegraphis.net/data/countries/AD#AD> geographis:capital <http://telegraphis.net/data/capitals/AD/Andorra_la_Vella#AndorralaVella>.
+<http://telegraphis.net/data/countries/AD#AD> geographis:currency <http://telegraphis.net/data/currencies/EUR#EUR>.
+<http://telegraphis.net/data/countries/AD#AD> owl:sameAs <http://www.geonames.org/countries/#AD>.
+<http://telegraphis.net/data/countries/AD#AD> owl:sameAs <http://sws.geonames.org/3041565/>.
+<http://telegraphis.net/data/countries/AD#AD> owl:sameAs <http://dbpedia.org/resource/Andorra>.
+<http://telegraphis.net/data/countries/AD#AD> owl:sameAs <http://www4.wiwiss.fu-berlin.de/factbook/resource/Andorra>.
