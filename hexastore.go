@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/d4l3k/turtle"
+	"github.com/thundergolfer/turtle" // TODO: use fork until my PR is merged to handle RDF 'Bags'
 )
 
 func (db tripleDb) toString() string {
@@ -490,7 +490,7 @@ func InitHexastoreFromJSON(dbFilePath string) (*HexastoreDB, error) {
 // {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
 // {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
 // {"subject": <STRING>, "prop": <STRING>, "object": <STRING>}
-func InitHexastoreFromJSONRows(dbFilePath string) (*HexastoreDB, error) {
+func InitHexastoreFromJSONRows(dbFilePath string) (Hexastore, error) {
 	db := tripleDb{Triples: []Entry{}}
 	var entry Entry
 
@@ -521,7 +521,7 @@ func InitHexastoreFromJSONRows(dbFilePath string) (*HexastoreDB, error) {
 
 // InitHexastoreFromTurtle creates a new hexastore and fills it with triples
 // from a file in Terse RDF Triple Language, or 'Turtle' (https://www.w3.org/TeamSubmission/turtle/)
-func InitHexastoreFromTurtle(dbFilePath string) (*HexastoreDB, error) {
+func InitHexastoreFromTurtle(dbFilePath string) (Hexastore, error) {
 	db := tripleDb{}
 
 	dat, err := ioutil.ReadFile(dbFilePath)
