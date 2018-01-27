@@ -45,7 +45,7 @@ import (
 
 #### Package Interface
 
-###### `InitHexastoreFromJSONRows(filename string) (*HexastoreDB, error)`
+##### `InitHexastoreFromJSONRows(filename string) (*HexastoreDB, error)`
 
 You can setup a Hexastore by passing a filepath to a `.json` file with the following format:
 
@@ -57,13 +57,13 @@ You can setup a Hexastore by passing a filepath to a `.json` file with the follo
 ...
 ```
 
-###### `InitHexastoreFromTurtle(dbFilePath string) (Hexastore, error)`
+##### `InitHexastoreFromTurtle(dbFilePath string) (Hexastore, error)`
 
 > BETA: Turtle files are currently parsed with [d4l3k/turtle](https://github.com/d4l3k/turtle), which is quite limited.
 
 [*Turtle* (Terse RDF Triple Language)](https://www.w3.org/TeamSubmission/turtle/) is a syntax for describing RDF semantic web graphs. You can load an RDF graph specified in turtle syntax with this function.
 
-###### `RunQuery(query string, store Hexastore) (string, error)`
+##### `RunQuery(query string, store Hexastore) (string, error)`
 
 Run a well-formed `simplesparql` query (see more below) against a Hexastore instance. Just returns a printable table of results like:
 
@@ -74,7 +74,7 @@ Cow                    | follows                |
 Apple                  | follows                |
 ```
 
-###### `SaveToJSONRows(filename string, store Hexastore) error`
+##### `SaveToJSONRows(filename string, store Hexastore) error`
 
 > Not yet implemented, but coming soon
 
