@@ -89,7 +89,7 @@ questions like "Who likes 'Manchester United'?", but not anything
 involving aggregations, grouping, conditionals. With time, these things
 may be implemented.
 
-The basics of it are the you preface variables with `?`, with a variable
+The basics of it are that you preface variables with `?`, with a variable
 in the `WHERE` clause acting like a wildcard (`*`). For example:
 
 `SELECT ?screen_name WHERE { 'jonobelotti_IO' 'follows' ?screen_name }`
